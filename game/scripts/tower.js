@@ -112,7 +112,7 @@ class Tower {
         this.resetCooldown();
         this.attack(e);
         // Draw line to target
-        if (!this.drawLine) return;
+        if (!this.drawLine || !render) return;
         stroke(this.color);
         strokeWeight(this.weight);
         line(this.pos.x, this.pos.y, e.pos.x, e.pos.y);

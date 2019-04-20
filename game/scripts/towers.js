@@ -135,10 +135,12 @@ tower.slow = {
         if (entities.length === 0) return;
         if (!this.canFire()) return;
         this.resetCooldown();
-        noStroke();
-        fill(this.color[0], this.color[1], this.color[2], 127);
-        var r = this.range * 2 + 1;
-        ellipse(this.pos.x, this.pos.y, r * ts, r * ts);
+        if(render){
+            noStroke();
+            fill(this.color[0], this.color[1], this.color[2], 127);
+            var r = this.range * 2 + 1;
+            ellipse(this.pos.x, this.pos.y, r * ts, r * ts);
+        }
         for (var i = 0; i < entities.length; i++) {
             this.onAim(entities[i]);
         }
@@ -245,9 +247,11 @@ tower.sniper = {
             onHit: function(e) {
                 var blastRadius = 1;
                 var inRadius = getInRange(e.pos.x, e.pos.y, blastRadius, enemies);
-                noStroke();
-                fill(this.color[0], this.color[1], this.color[2], 127);
-                ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+                if(render){
+                    noStroke();
+                    fill(this.color[0], this.color[1], this.color[2], 127);
+                    ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+                }
                 if (showEffects) {
                     var s = new ShrapnelExplosion(e.pos.x, e.pos.y);
                     for (var i = 0; i < particleAmt; i++) {
@@ -410,9 +414,11 @@ tower.bomb = {
     onHit: function(e) {
         var blastRadius = 1;
         var inRadius = getInRange(e.pos.x, e.pos.y, blastRadius, enemies);
-        noStroke();
-        fill(191, 85, 236, 127);
-        ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+        if(render){
+            noStroke();
+            fill(191, 85, 236, 127);
+            ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+        }
         if (showEffects) {
             var s = new BombExplosion(e.pos.x, e.pos.y);
             for (var i = 0; i < particleAmt; i++) {
@@ -450,9 +456,11 @@ tower.bomb = {
             onHit: function(e) {
                 var blastRadius = 1;
                 var inRadius = getInRange(e.pos.x, e.pos.y, blastRadius, enemies);
-                noStroke();
-                fill(191, 85, 236, 127);
-                ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+                if(render){
+                    noStroke();
+                    fill(191, 85, 236, 127);
+                    ellipse(e.pos.x, e.pos.y, ts * 2.5, ts * 2.5);
+                }
                 if (showEffects) {
                     var s = new BombExplosion(e.pos.x, e.pos.y);
                     for (var i = 0; i < particleAmt; i++) {
@@ -523,10 +531,12 @@ tower.tesla = {
         var last = e;
         var targets = [];
         var dmg = round(random(this.damageMin, this.damageMax));
-        var weight = this.weight;
-        stroke(this.color);
-        strokeWeight(weight);
-        line(this.pos.x, this.pos.y, e.pos.x, e.pos.y);
+        if(render){
+            var weight = this.weight;
+            stroke(this.color);
+            strokeWeight(weight);
+            line(this.pos.x, this.pos.y, e.pos.x, e.pos.y);
+        }
         if (!muteSounds && sounds.hasOwnProperty(this.sound)) {
             sounds[this.sound].play();
         }
@@ -536,15 +546,19 @@ tower.tesla = {
             targets.push(last);
             var next = getNearest(enemies, last.pos, targets);
             if (typeof next === 'undefined') break;
-            strokeWeight(weight);
-            var x = random(last.pos.x, next.pos.x);
-            var y = random(last.pos.y, next.pos.y);
-            line(last.pos.x, last.pos.y, x, y);
-            line(x, y, next.pos.x, next.pos.y);
+            if(render){
+                strokeWeight(weight);
+                var x = random(last.pos.x, next.pos.x);
+                var y = random(last.pos.y, next.pos.y);
+                line(last.pos.x, last.pos.y, x, y);
+                line(x, y, next.pos.x, next.pos.y);
+            }
             last = next;
             dmg /= 2;
         }
-        strokeWeight(1);
+        if(render){
+            strokeWeight(1);
+        }
     },
     // Upgrades
     upgrades: [
@@ -580,10 +594,12 @@ tower.tesla = {
                 var last = e;
                 var targets = [];
                 var dmg = round(random(this.damageMin, this.damageMax));
-                var weight = this.weight;
-                stroke(this.color);
-                strokeWeight(weight);
-                line(this.pos.x, this.pos.y, e.pos.x, e.pos.y);
+                if(render){
+                    var weight = this.weight;
+                    stroke(this.color);
+                    strokeWeight(weight);
+                    line(this.pos.x, this.pos.y, e.pos.x, e.pos.y);
+                }
                 if (!muteSounds && sounds.hasOwnProperty(this.sound)) {
                     sounds[this.sound].play();
                 }
@@ -593,15 +609,20 @@ tower.tesla = {
                     targets.push(last);
                     var next = getNearest(enemies, last.pos, targets);
                     if (typeof next === 'undefined') break;
-                    strokeWeight(weight);
-                    var x = random(last.pos.x, next.pos.x);
-                    var y = random(last.pos.y, next.pos.y);
-                    line(last.pos.x, last.pos.y, x, y);
-                    line(x, y, next.pos.x, next.pos.y);
+                    if(render){
+                        strokeWeight(weight);
+                        var x = random(last.pos.x, next.pos.x);
+                        var y = random(last.pos.y, next.pos.y);
+                        line(last.pos.x, last.pos.y, x, y);
+                        line(x, y, next.pos.x, next.pos.y);
+                    }
                     last = next;
                     dmg /= 2;
                 }
-                strokeWeight(1);
+                if(render){
+                    strokeWeight(1);
+                }
+
             },
         }
     ]

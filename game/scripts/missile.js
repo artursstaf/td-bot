@@ -48,9 +48,11 @@ class Missile {
         this.kill();
         var t = this.pos;
         var inRadius = getInRange(t.x, t.y, this.blastRadius, enemies);
-        noStroke();
-        fill(this.color[0], this.color[1], this.color[2], 127);
-        var r = (this.blastRadius + 0.5) * ts * 2;
+        if(render){
+            noStroke();
+            fill(this.color[0], this.color[1], this.color[2], 127);
+        }
+
         if (showEffects) {
             var s = new RocketExplosion(this.pos.x, this.pos.y);
             for (var i = 0; i < particleAmt; i++) {
@@ -58,7 +60,10 @@ class Missile {
             }
             systems.push(s);
         }
-        ellipse(t.x, t.y, r, r);
+        if(render){
+            var r = (this.blastRadius + 0.5) * ts * 2;
+            ellipse(t.x, t.y, r, r);
+        }
         for (var i = 0; i < inRadius.length; i++) {
             var e = inRadius[i];
             var damage = round(random(this.damageMax, this.damageMin));

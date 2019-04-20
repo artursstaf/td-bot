@@ -26,16 +26,8 @@
     <header>
       <h1>Tower Defense</h1>
     </header>
-
     <main>
       <div id="left-asides">
-        <aside id="map-aside">
-          <div class="group">
-            <p><button class="io" onclick="importMap(prompt('Input map string:'))">Import map (M)</button></p>
-            <p><button class="io" onclick="copyToClipboard(exportMap())">Export map (X)</button></p>
-          </div>
-          <p>Edit maps <a href="https://xithiox.github.io/td-editor/" target="_blank">here</a>.</p>
-        </aside>
         <aside id="store">
           <h2>Store</h2>
           <div class="group">
@@ -61,30 +53,8 @@
             <button id="pause" onclick="pause()">Start</button>
             <button onclick="resetGame()">Restart</button>
           </div>
-          <p>
-            Map:
-            <select id="map">
-              <option value="empty2">Empty (2)</option>
-              <option value="empty3">Empty (3)</option>
-              <option value="sparse2" selected>Sparse (2)</option>
-              <option value="sparse3">Sparse (3)</option>
-              <option value="dense2">Dense (2)</option>
-              <option value="dense3">Dense (3)</option>
-              <option value="solid2">Solid (2)</option>
-              <option value="solid3">Solid (3)</option>
-              <option id="custom" value="custom">Custom</option>
-              <option value="loops">Loops</option>
-              <option value="spiral">Spiral</option>
-              <option value="branch">Branch</option>
-              <option value="branchAlt">Branch (Alt)</option>
-              <option value="city">City</option>
-              <option value="freeway">Freeway</option>
-              <option value="walls">Walls</option>
-              <option value="fork">Fork</option>
-            </select>
-          </p>
-        </aside>
 
+        </aside>
         <aside id="info">
           <div id="info-div">
             <h3 id="name"></h3>

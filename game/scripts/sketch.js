@@ -76,7 +76,7 @@ var sellConst = 0.8;    // ratio of tower cost to sell price
 var wallCover = 0.1;    // percentage of map covered by walls
 var waveCool = 120;     // number of ticks between waves
 var weakness = 0.5;     // damage increase from weakness
-
+let render = true;
 
 // Misc functions
 
@@ -149,7 +149,8 @@ function clearInfo() {
 }
 
 // TODO implement
-function customWave() {}
+function customWave() {
+}
 
 // Check if all conditions for showing a range are true
 function doRange() {
@@ -171,7 +172,7 @@ function empty(col, row) {
     if (typeof exit !== 'undefined') {
         if (exit.x === col && exit.y === row) return false;
     }
-    
+
     return true;
 }
 
@@ -258,15 +259,6 @@ function getWalkMap() {
     return walkMap;
 }
 
-// Load a map from a map string
-function importMap(str) {
-    try {
-        custom = JSON.parse(LZString.decompressFromBase64(str));
-        document.getElementById('custom').selected = true;
-        resetGame();
-    } catch (err) {}
-}
-
 // Check if wave is at least min and less than max
 function isWave(min, max) {
     if (typeof max === 'undefined') return wave >= min;
@@ -275,105 +267,53 @@ function isWave(min, max) {
 
 // Load map from template
 // Always have an exit and spawnpoints if you do not have a premade grid
-// TODO health and money by map
 function loadMap() {
-    var name = document.getElementById('map').value;
+    var name = 'dense3';
 
     health = 40;
     cash = 55;
-    
-    if (name === 'custom' && custom) {
-        // Grids
-        display = copyArray(custom.display);
-        displayDir = copyArray(custom.displayDir);
-        grid = copyArray(custom.grid);
-        metadata = copyArray(custom.metadata);
-        paths = copyArray(custom.paths);
-        // Important tiles
-        exit = createVector(custom.exit[0], custom.exit[1]);
-        spawnpoints = [];
-        for (var i = 0; i < custom.spawnpoints.length; i++) {
-            var s = custom.spawnpoints[i];
-            spawnpoints.push(createVector(s[0], s[1]));
-        }
-        // Colors
-        bg = custom.bg;
-        border = custom.border;
-        borderAlpha = custom.borderAlpha;
-        // Misc
-        cols = custom.cols;
-        rows = custom.rows;
 
-        resizeFit();
-    } else if (name in maps) {
-        var m = maps[name];
 
-        // Grids
-        display = copyArray(m.display);
-        displayDir = copyArray(m.displayDir);
-        grid = copyArray(m.grid);
-        metadata = copyArray(m.metadata);
-        paths = copyArray(m.paths);
-        // Important tiles
-        exit = createVector(m.exit[0], m.exit[1]);
-        spawnpoints = [];
-        for (var i = 0; i < m.spawnpoints.length; i++) {
-            var s = m.spawnpoints[i];
-            spawnpoints.push(createVector(s[0], s[1]));
-        }
-        // Colors
-        bg = m.bg;
-        border = m.border;
-        borderAlpha = m.borderAlpha;
-        // Misc
-        cols = m.cols;
-        rows = m.rows;
-
-        resizeFit();
+    resizeMax();
+    var numSpawns;
+    wallCover = 0.1;
+    if (name[name.length - 1] === '3') {
+        cash = 65;
+        numSpawns = 3;
     } else {
-        resizeMax();
-        var numSpawns;
-        wallCover = 0.1;
-        if (name[name.length - 1] === '3') {
-            cash = 65;
-            numSpawns = 3;
-        } else {
-            numSpawns = 2;
-        }
-        if (name === 'empty2' || name === 'empty3') {
-            wallCover = 0;
-        }
-        if (name === 'sparse2' || name === 'sparse3') {
-            wallCover = 0.1;
-        }
-        if (name === 'dense2' || name === 'dense3') {
-            wallCover = 0.2;
-        }
-        if (name === 'solid2' || name === 'solid3') {
-            wallCover = 0.3;
-        }
-        randomMap(numSpawns);
-        display = replaceArray(
-            grid, [0, 1, 2, 3, 4], ['empty', 'wall', 'empty', 'tower', 'empty']
-        );
-        displayDir = buildArray(cols, rows, 0);
-        // Colors
-        bg = [0, 0, 0];
-        border = 255;
-        borderAlpha = 31;
-        // Misc
-        metadata = buildArray(cols, rows, null);
+        numSpawns = 2;
     }
-
+    if (name === 'empty2' || name === 'empty3') {
+        wallCover = 0;
+    }
+    if (name === 'sparse2' || name === 'sparse3') {
+        wallCover = 0.1;
+    }
+    if (name === 'dense2' || name === 'dense3') {
+        wallCover = 0.2;
+    }
+    if (name === 'solid2' || name === 'solid3') {
+        wallCover = 0.3;
+    }
+    randomMap(numSpawns);
+    display = replaceArray(
+        grid, [0, 1, 2, 3, 4], ['empty', 'wall', 'empty', 'tower', 'empty']
+    );
+    displayDir = buildArray(cols, rows, 0);
+    // Colors
+    bg = [0, 0, 0];
+    border = 255;
+    borderAlpha = 31;
+    // Misc
+    metadata = buildArray(cols, rows, null);
     tempSpawns = [];
-
     recalculate();
 }
 
 // Load all sounds
 function loadSounds() {
     sounds = {};
-    
+
     // Missile explosion
     sounds.boom = loadSound('sounds/boom.wav');
     sounds.boom.setVolume(0.3);
@@ -676,21 +616,13 @@ function resetGame() {
     nextWave();
 }
 
-// Changes tile size to fit everything onscreen
-function resizeFit() {
-    var div = document.getElementById('sketch-holder');
-    var ts1 = floor(div.offsetWidth / cols);
-    var ts2 = floor(div.offsetHeight / rows);
-    ts = Math.min(ts1, ts2);
-    resizeCanvas(cols * ts, rows * ts, true);
-}
-
 // Resizes cols, rows, and canvas based on tile size
 function resizeMax() {
-    var div = document.getElementById('sketch-holder');
-    cols = floor(div.offsetWidth / ts);
-    rows = floor(div.offsetHeight / ts);
-    resizeCanvas(cols * ts, rows * ts, true);
+    cols = 60;
+    rows = 40;
+    if(render){
+        resizeCanvas(cols * ts, rows * ts, true);
+    }
 }
 
 // Sell a tower
@@ -722,18 +654,18 @@ function showRange(t, cx, cy) {
 function updateInfo(t) {
     var name = document.getElementById('name');
     name.innerHTML = '<span style="color:rgb(' + t.color + ')">' + t.title +
-    '</span>';
+        '</span>';
     document.getElementById('cost').innerHTML = 'Cost: $' + t.totalCost;
     document.getElementById('sellPrice').innerHTML = 'Sell price: $' +
-    t.sellPrice();
+        t.sellPrice();
     document.getElementById('upPrice').innerHTML = 'Upgrade price: ' +
-    (t.upgrades.length > 0 ? '$' + t.upgrades[0].cost : 'N/A');
+        (t.upgrades.length > 0 ? '$' + t.upgrades[0].cost : 'N/A');
     document.getElementById('damage').innerHTML = 'Damage: ' + t.getDamage();
     document.getElementById('type').innerHTML = 'Type: ' +
-    t.type.toUpperCase();
+        t.type.toUpperCase();
     document.getElementById('range').innerHTML = 'Range: ' + t.range;
     document.getElementById('cooldown').innerHTML = 'Avg. Cooldown: ' +
-    t.getCooldown().toFixed(2) + 's';
+        t.getCooldown().toFixed(2) + 's';
     var buttons = document.getElementById('info-buttons');
     buttons.style.display = toPlace ? 'none' : 'flex';
     document.getElementById('info-div').style.display = 'block';
@@ -748,7 +680,7 @@ function updatePause() {
 function updateStatus() {
     document.getElementById('wave').innerHTML = 'Wave ' + wave;
     document.getElementById('health').innerHTML = 'Health: ' +
-    health + '/' + maxHealth;
+        health + '/' + maxHealth;
     document.getElementById('cash').innerHTML = '$' + cash;
 }
 
@@ -923,7 +855,7 @@ function draw() {
         }
 
         // Attack target
-        if (p.reachedTarget()) p.explode()
+        if (p.reachedTarget()) p.explode();
 
         // Kill if outside map
         if (outsideMap(p)) p.kill();
@@ -979,7 +911,7 @@ function draw() {
         noStroke();
         fill(0);
         rect(width - 60, 0, 60, 22);
-        
+
         fill(255);
         text('Firing off', width - 55, 15);
     }
@@ -1020,9 +952,152 @@ function draw() {
     }
 }
 
+function tickWithoutRender(){
+    let oldMute = muteSounds;
+    let oldRender = render;
+    let oldParticles = showEffects;
+
+    showEffects = false;
+    render = false;
+    muteSounds = true;
+    // Update spawn and wave cooldown
+    if (!paused) {
+        if (scd > 0) scd--;
+        if (wcd > 0 && toWait) wcd--;
+    }
+
+    // Spawn enemies
+    if (canSpawn() && !paused) {
+        // Spawn same enemy for each spawnpoint
+        var name = newEnemies.shift();
+        for (var i = 0; i < spawnpoints.length; i++) {
+            var s = spawnpoints[i];
+            var c = center(s.x, s.y);
+            enemies.push(createEnemy(c.x, c.y, enemy[name]));
+        }
+
+        // Temporary spawnpoints
+        for (var i = 0; i < tempSpawns.length; i++) {
+            var s = tempSpawns[i];
+            if (s[1] === 0) continue;
+            s[1]--;
+            var c = center(s[0].x, s[0].y);
+            enemies.push(createEnemy(c.x, c.y, enemy[name]));
+        }
+
+        // Reset cooldown
+        toCooldown = true;
+    }
+
+    // Update enemies
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+
+        // Update direction and position
+        if (!paused) {
+            e.steer();
+            e.update();
+            e.onTick();
+        }
+
+        // Kill if outside map
+        if (outsideMap(e)) e.kill();
+
+        // If at exit tile, kill and reduce player health
+        if (atTileCenter(e.pos.x, e.pos.y, exit.x, exit.y)) e.onExit();
+
+        if (e.isDead()) enemies.splice(i, 1);
+    }
+
+    // Update towers
+    for (let i = towers.length - 1; i >= 0; i--) {
+        let t = towers[i];
+
+        // Target enemies and update cooldowns
+        if (!paused) {
+            t.target(enemies);
+            t.update();
+        }
+
+        // Kill if outside map
+        if (outsideMap(t)) t.kill();
+
+        if (t.isDead()) towers.splice(i, 1);
+    }
+
+
+    // Update  projectiles
+    for (let i = projectiles.length - 1; i >= 0; i--) {
+        let p = projectiles[i];
+
+        if (!paused) {
+            p.steer();
+            p.update();
+        }
+
+        // Attack target
+        if (p.reachedTarget()) p.explode();
+
+        // Kill if outside map
+        if (outsideMap(p)) p.kill();
+
+
+        if (p.isDead()) projectiles.splice(i, 1);
+    }
+
+    removeTempSpawns();
+
+    projectiles = projectiles.concat(newProjectiles);
+    towers = towers.concat(newTowers);
+    newProjectiles = [];
+    newTowers = [];
+
+    // If player is dead, reset samples
+    if (health <= 0) resetGame();
+
+    // Start next wave
+    if (toWait && wcd === 0 || skipToNext && newEnemies.length === 0) {
+        toWait = false;
+        wcd = 0;
+        nextWave();
+    }
+
+    // Wait for next wave
+    if (noMoreEnemies() && !toWait) {
+        wcd = waveCool;
+        toWait = true;
+    }
+
+    // Reset spawn cooldown
+    if (toCooldown) {
+        scd = spawnCool;
+        toCooldown = false;
+    }
+
+    // Recalculate pathfinding
+    if (toPathfind) {
+        recalculate();
+        toPathfind = false;
+    }
+
+    muteSounds = oldMute;
+    render = oldRender;
+    showEffects = oldParticles;
+}
+
+function run10kTicks(){
+    let start = new Date().getTime();
+
+    for(let i = 0; i < 10000; i++){
+        tickWithoutRender();
+    }
+
+    let end = new Date().getTime();
+    console.log(end - start);
+
+}
 
 // User input
-
 function keyPressed() {
     switch (keyCode) {
         case 27:
@@ -1142,7 +1217,7 @@ function mousePressed() {
     if (!mouseInMap()) return;
     var p = gridPos(mouseX, mouseY);
     var t = getTower(p.x, p.y);
-    
+
     if (t) {
         // Clicked on tower
         selected = t;
@@ -1152,8 +1227,3 @@ function mousePressed() {
         buy(createTower(p.x, p.y, tower[towerType]));
     }
 }
-
-
-// Events
-
-document.getElementById('map').addEventListener('change', resetGame);

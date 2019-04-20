@@ -1,0 +1,16 @@
+{
+  "name": "td-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "train.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@tensorflow/tfjs": "^1.1.0",
+    "http-server": "^0.11.1",
+    "node": "^11.13.0"
+  }
+}
