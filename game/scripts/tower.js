@@ -15,6 +15,7 @@ class Tower {
         this.width = 0.3;           // barrel width in tiles
 
         // Misc
+        this.id = 0;
         this.alive = true;
         this.name = 'tower';
         this.sound = null;          // sound to play on fire

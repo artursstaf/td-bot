@@ -61,8 +61,8 @@ let showEffects = true; // whether or not to display particle effects
 let showFPS = false;    // whether or not to display FPS
 let skipToNext = false; // whether or not to immediately start next wave
 let stopFiring = false; // whether or not to pause towers firing
-let toCooldown;         // flag to reset spawning cooldown
-let toPathfind;         // flag to update enemy pathfinding
+let toCooldown;         // flag to reset spawning cool-down
+let toPathfind;         // flag to update enemy path-finding
 let toPlace;            // flag to place a tower
 let toWait;             // flag to wait before next wave
 let wcd;                // number of ticks until next wave
@@ -70,7 +70,7 @@ let wcd;                // number of ticks until next wave
 let avgFPS = 0;         // current average of all FPS values
 let numFPS = 0;         // number of FPS values calculated so far
 
-const minDist = 15;       // minimum distance between spawnpoint and exit
+const minDist = 15;       // minimum distance between spawn-point and exit
 const resistance = 0.5;   // percentage of damage blocked by resistance
 const sellConst = 0.8;    // ratio of tower cost to sell price
 let wallCover = 0.1;    // percentage of map covered by walls
@@ -272,7 +272,6 @@ function loadMap() {
 
     health = 40;
     cash = 55;
-
 
     resizeMax();
     let numSpawns;
@@ -592,7 +591,7 @@ function recalculate() {
 }
 
 // TODO vary health based on map
-function resetGame() {
+function resetGame(pause_game = true) {
     loadMap();
     // Clear all entities
     enemies = [];
@@ -607,13 +606,15 @@ function resetGame() {
     maxHealth = health;
     wave = 0;
     // Reset all flags
-    paused = true;
+    paused = pause_game;
     scd = 0;
     toCooldown = false;
     toPathfind = false;
     toPlace = false;
     // Start samples
-    nextWave();
+    if(!pause_game){
+        nextWave();
+    }
 }
 
 // Resizes cols, rows, and canvas based on tile size
@@ -716,7 +717,6 @@ function setup() {
     resetGame();
 }
 
-// TODO show range of selected tower
 function draw() {
     background(bg);
 
@@ -1089,10 +1089,10 @@ function tickWithoutRender() {
     showEffects = oldParticles;
 }
 
-function run10kTicks() {
+function run100kTicks() {
     let start = new Date().getTime();
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < 100000; i++) {
         tickWithoutRender();
     }
 

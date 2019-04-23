@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="author" content="xithiox">
     <title>Tower Defense</title>
@@ -21,61 +21,84 @@
     <script src="scripts/maps.js" defer></script>
     <script src="scripts/tiles.js" defer></script>
     <script src="scripts/sketch.js" defer></script>
-  </head>
-  <body>
-    <header>
-      <h1>Tower Defense</h1>
-    </header>
-    <main>
-      <div id="left-asides">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.js"></script>
+    <script src="game_env.js"></script>
+    <script src="train_model.js"></script>
+
+</head>
+<body>
+<header>
+    <h1>Tower Defense</h1>
+</header>
+<main>
+    <div id="left-asides">
         <aside id="store">
-          <h2>Store</h2>
-          <div class="group">
-            <p><button class="gun" onclick="setPlace('gun')">Gun Tower (1)</button></p>
-            <p><button class="laser" onclick="setPlace('laser')">Laser Tower (2)</button></p>
-            <p><button class="slow" onclick="setPlace('slow')">Slow Tower (3)</button></p>
-            <p><button class="sniper" onclick="setPlace('sniper')">Sniper Tower (4)</button></p>
-            <p><button class="rocket" onclick="setPlace('rocket')">Rocket Tower (5)</button></p>
-            <p><button class="bomb" onclick="setPlace('bomb')">Bomb Tower (6)</button></p>
-            <p><button class="tesla" onclick="setPlace('tesla')">Tesla Coil (7)</button></p>
-          </div>
+            <h2>Store</h2>
+            <div class="group">
+                <p>
+                    <button class="gun" onclick="setPlace('gun')">Gun Tower (1)</button>
+                </p>
+                <p>
+                    <button class="laser" onclick="setPlace('laser')">Laser Tower (2)</button>
+                </p>
+                <p>
+                    <button class="slow" onclick="setPlace('slow')">Slow Tower (3)</button>
+                </p>
+                <p>
+                    <button class="sniper" onclick="setPlace('sniper')">Sniper Tower (4)</button>
+                </p>
+                <p>
+                    <button class="rocket" onclick="setPlace('rocket')">Rocket Tower (5)</button>
+                </p>
+                <p>
+                    <button class="bomb" onclick="setPlace('bomb')">Bomb Tower (6)</button>
+                </p>
+                <p>
+                    <button class="tesla" onclick="setPlace('tesla')">Tesla Coil (7)</button>
+                </p>
+            </div>
         </aside>
-      </div>
+    </div>
 
-      <div id="sketch-holder"></div>
+    <div id="sketch-holder"></div>
 
-      <div id="right-asides">
+    <div id="right-asides">
         <aside id="status">
-          <p id="wave"></p>
-          <p id="health"></p>
-          <p id="cash"></p>
-          <div class="horiz-buttons">
-            <button id="pause" onclick="pause()">Start</button>
-            <button onclick="resetGame()">Restart</button>
-          </div>
-
+            <p id="wave"></p>
+            <p id="health"></p>
+            <p id="cash"></p>
+            <div class="horiz-buttons">
+                <button id="pause" onclick="pause()">Start</button>
+                <button onclick="resetGame()">Restart</button>
+            </div>
+        </aside>
+        <aside id="model">
+          <button id="train_button" onClick="train()">Train</button>
         </aside>
         <aside id="info">
-          <div id="info-div">
-            <h3 id="name"></h3>
-            <p id="cost"></p>
-            <p id="sellPrice"></p>
-            <p id="upPrice"></p>
-            <p id="damage"></p>
-            <p id="type"></p>
-            <p id="range"></p>
-            <p id="cooldown"></p>
-            <div class="horiz-buttons" id="info-buttons">
-              <button id="sell" onclick="if (selected) sell(selected)">Sell</button>
-              <button id="upgrade" onclick="if (selected && selected.upgrades.length > 0) upgrade(selected.upgrades[0])">Upgrade</button>
+            <div id="info-div">
+                <h3 id="name"></h3>
+                <p id="cost"></p>
+                <p id="sellPrice"></p>
+                <p id="upPrice"></p>
+                <p id="damage"></p>
+                <p id="type"></p>
+                <p id="range"></p>
+                <p id="cooldown"></p>
+                <div class="horiz-buttons" id="info-buttons">
+                    <button id="sell" onclick="if (selected) sell(selected)">Sell</button>
+                    <button id="upgrade"
+                            onclick="if (selected && selected.upgrades.length > 0) upgrade(selected.upgrades[0])">
+                        Upgrade
+                    </button>
+                </div>
             </div>
-          </div>
         </aside>
-      </div>
-    </main>
-
-    <footer>
-      <p id="copyright">&copy; 2018, xithiox</p>
-    </footer>
-  </body>
+    </div>
+</main>
+<footer>
+    <p id="copyright">&copy; 2018, xithiox</p>
+</footer>
+</body>
 </html>
+

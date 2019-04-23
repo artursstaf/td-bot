@@ -266,5 +266,13 @@ function stv(str) {
 
 // Convert vector to string
 function vts(v) {
-    return v.x + ',' + v.y;
+    return v.x + ',' + v.y
+}
+
+function create2DZerosLike(shape){
+    let arr = new Array(shape[0]);
+    for (let i = 0; i < shape[0]; i++){
+        arr[i] = new Array(shape[1]).fill(0);
+    }
+    return arr;
 }

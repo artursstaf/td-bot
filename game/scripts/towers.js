@@ -16,6 +16,7 @@ tower.gun = {
     radius: 0.9,
     secondary: [149, 165, 166],
     // Misc
+    id: 1,
     name: 'gun',
     title: 'Gun Tower',
     // Stats
@@ -29,6 +30,7 @@ tower.gun = {
             // Display
             color: [249, 105, 14],
             // Misc
+            id: 2,
             name: 'machineGun',
             title: 'Machine Gun',
             // Stats
@@ -49,6 +51,7 @@ tower.laser = {
     secondary: [149, 165, 166],
     width: 0.25,
     // Misc
+    id: 3,
     name: 'laser',
     title: 'Laser Tower',
     // Stats
@@ -68,6 +71,7 @@ tower.laser = {
             weight: 3,
             width: 0.35,
             // Misc
+            id: 4,
             name: 'beamEmitter',
             title: 'Beam Emitter',
             // Stats
@@ -104,6 +108,7 @@ tower.slow = {
     secondary: [189, 195, 199],
     width: 0.3,
     // Misc
+    id: 5,
     name: 'slow',
     title: 'Slow Tower',
     // Stats
@@ -156,6 +161,7 @@ tower.slow = {
             color: [102, 204, 26],
             radius: 0.9,
             // Misc
+            id: 6,
             name: 'poison',
             title: 'Poison Tower',
             // Stats
@@ -180,6 +186,7 @@ tower.sniper = {
     radius: 0.9,
     weight: 3,
     // Misc
+    id: 7,
     name: 'sniper',
     sound: 'sniper',
     title: 'Sniper Tower',
@@ -223,6 +230,7 @@ tower.sniper = {
             weight: 4,
             width: 0.4,
             // Misc
+            id: 8,
             name: 'railgun',
             sound: 'railgun',
             title: 'Railgun',
@@ -279,6 +287,7 @@ tower.rocket = {
     secondary: [189, 195, 199],
     width: 0.2,
     // Misc
+    id: 9,
     name: 'rocket',
     sound: 'missile',
     title: 'Rocket Tower',
@@ -332,6 +341,7 @@ tower.rocket = {
             color: [65, 131, 215],
             secondary: [108, 122, 137],
             // Misc
+            id: 10,
             name: 'missileSilo',
             sound: 'missile',
             title: 'Missile Silo',
@@ -393,6 +403,7 @@ tower.bomb = {
     width: 0.35,
     secondary: [103, 128, 159],
     // Misc
+    id: 11,
     name: 'bomb',
     title: 'Bomb Tower',
     // Stats
@@ -437,6 +448,7 @@ tower.bomb = {
             // Display
             radius: 1.1,
             // Misc
+            id: 12,
             name: 'clusterBomb',
             title: 'Cluster Bomb',
             // Stats
@@ -502,6 +514,7 @@ tower.tesla = {
     secondary: [30, 139, 195],
     weight: 10,
     // Misc
+    id: 13,
     name: 'tesla',
     sound: 'spark',
     title: 'Tesla Coil',
@@ -568,6 +581,7 @@ tower.tesla = {
             radius: 1.1,
             secondary: [51, 110, 123],
             // Misc
+            id: 14,
             name: 'plasma',
             title: 'Plasma Tower',
             // Stats

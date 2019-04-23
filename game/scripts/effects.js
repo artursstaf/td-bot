@@ -13,7 +13,6 @@ function createEffect(duration, template) {
 
 var effects = {};
 
-
 effects.slow = {
     // Display
     color: [68, 108, 179],

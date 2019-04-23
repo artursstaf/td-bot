@@ -11,7 +11,6 @@ function createEnemy(x, y, template) {
     return e;
 }
 
-
 var enemy = {};
 
 
