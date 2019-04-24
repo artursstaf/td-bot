@@ -1,42 +1,68 @@
 // Provides interface for agent to interact with environment
 env = {
-    score: 0,
     reset: function () {
         // Stop .p5 game loop
         noLoop();
         resetGame(false);
-        render ? draw() : tickWithoutRender();
-        return _getState();
+        if(render){
+            draw();
+        }else{
+            tickWithoutRender();
+        }
+
+        this.total_cash_acquired = cash;
+        this.score = getScore();
+
+        return getObservation();
     },
     step: function (actions) {
-        _applyActions(actions);
+        applyActions(actions);
+
+        let prev_cash = cash;
+
         // TODO determine ticks per action
-        for (let i = 0; i < 60; i++){
-            render ? draw() : tickWithoutRender();
+        let died = false;
+        for (let i = 0; i < 120; i++){
+            if(render){
+                died = draw();
+            }else{
+                died = tickWithoutRender();
+            }
+            if(died) break;
         }
-        return _getState();
+
+        // Ignore cash loss from buying towers
+        let cashGained = Math.max(cash - prev_cash, 0);
+        env.total_cash_acquired += cashGained;
+        return getState(died);
     }
 };
 
 // Return Observation, Reward, Done tuple
-function _getState(){
-    return [_getObservation(), _getReward(), _getDone()];
+function getState(isDone){
+    return [getObservation(), getReward(isDone), isDone];
 }
 
-function _applyActions(actions) {
-
-}
-
-function _getReward(){
-    // Calculate reward as a difference in score
+function applyActions(actions) {
 
 }
 
-function _getDone(){
-    return health <= 1;
+function getReward(isDone){
+    if(isDone)
+        return -10.0;
+    // Wave - sparse reward
+    // Cash -> health -> wave
+    let new_score = getScore();
+    let diff = new_score - env.score;
+    env.score = new_score;
+    return diff;
 }
 
-function _getObservation() {
+function getScore(){
+    return Math.max(wave, 1) + 0.3 * health + 0.055 * env.total_cash_acquired;
+}
+
+function getObservation() {
     let spawn_and_temp_tiles = create2DZerosLike([cols, rows]);
 
     spawnpoints.forEach((s) => {
@@ -55,7 +81,7 @@ function _getObservation() {
     });
 
     // array of 700 enemies with their absolute position and type
-    let alive_enemies_type_and_pos = buildArray(1, 700, [0, 0, 0])[0];
+    let alive_enemies_type_and_pos = buildArray(1, 1500, [0, 0, 0])[0];
 
     enemies.forEach((e, i) => {
         let grid_position = gridPos(e.pos.x, e.pos.y);

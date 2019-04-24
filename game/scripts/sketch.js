@@ -605,16 +605,13 @@ function resetGame(pause_game = true) {
     health = 40;
     maxHealth = health;
     wave = 0;
+    wcd = 0;
     // Reset all flags
     paused = pause_game;
     scd = 0;
     toCooldown = false;
     toPathfind = false;
     toPlace = false;
-    // Start samples
-    if(!pause_game){
-        nextWave();
-    }
 }
 
 // Resizes cols, rows, and canvas based on tile size
@@ -923,7 +920,10 @@ function draw() {
     newTowers = [];
 
     // If player is dead, reset samples
-    if (health <= 0) resetGame();
+    if (health <= 0){
+        resetGame();
+        return true;
+    }
 
     // Start next wave
     if (toWait && wcd === 0 || skipToNext && newEnemies.length === 0) {
@@ -949,6 +949,7 @@ function draw() {
         recalculate();
         toPathfind = false;
     }
+    return false;
 }
 
 function tickWithoutRender() {
@@ -1054,9 +1055,15 @@ function tickWithoutRender() {
     newProjectiles = [];
     newTowers = [];
 
+    muteSounds = oldMute;
+    render = oldRender;
+    showEffects = oldParticles;
+
     // If player is dead, reset samples
-    if (health <= 0)
+    if (health <= 0){
         resetGame();
+        return true;
+    }
 
     // Start next wave
     if (toWait && wcd === 0 || skipToNext && newEnemies.length === 0) {
@@ -1064,7 +1071,6 @@ function tickWithoutRender() {
         wcd = 0;
         nextWave();
     }
-
 
     // Wait for next wave
     if (noMoreEnemies() && !toWait) {
@@ -1083,10 +1089,7 @@ function tickWithoutRender() {
         recalculate();
         toPathfind = false;
     }
-
-    muteSounds = oldMute;
-    render = oldRender;
-    showEffects = oldParticles;
+    return false;
 }
 
 function run100kTicks() {
