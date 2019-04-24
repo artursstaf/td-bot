@@ -1163,8 +1163,7 @@ function keyPressed() {
             if (!showEffects) systems = [];
             break;
         case 81:
-            // Q
-            stopFiring = !stopFiring;
+            // Q            stopFiring = !stopFiring;
             break;
         case 82:
             // R

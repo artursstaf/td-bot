@@ -5,6 +5,7 @@ class Enemy {
         this.radius = 0.5;          // radius in tiles
 
         // Misc
+        this.id = 0;
         this.alive = true;
         this.effects = [];          // status effects
         this.name = 'enemy';

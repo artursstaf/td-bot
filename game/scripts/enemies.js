@@ -18,6 +18,7 @@ enemy.weak = {
     // Display
     color: [189, 195, 199],
     // Misc
+    id: 1,
     name: 'weak',
     // Stats
     cash: 1,
@@ -29,6 +30,7 @@ enemy.strong = {
     color: [108, 122, 137],
     radius: 0.6,
     // Misc
+    id: 2,
     name: 'strong',
     // Stats
     cash: 1,
@@ -39,6 +41,7 @@ enemy.fast = {
     // Display
     color: [61, 251, 255],
     // Misc
+    id: 3,
     name: 'fast',
     // Stats
     cash: 2,
@@ -65,6 +68,7 @@ enemy.strongFast = {
     // Display
     color: [30, 139, 195],
     // Misc
+    id: 4,
     name: 'strongFast',
     // Stats
     cash: 2,
@@ -92,6 +96,7 @@ enemy.medic = {
     color: [192, 57, 43],
     radius: 0.7,
     // Misc
+    id: 5,
     name: 'medic',
     // Stats
     cash: 4,
@@ -111,6 +116,7 @@ enemy.stronger = {
     color: [52, 73, 94],
     radius: 0.8,
     // Misc
+    id: 6,
     name: 'stronger',
     // Stats
     cash: 4,
@@ -121,6 +127,7 @@ enemy.faster = {
     // Display
     color: [249, 105, 14],
     // Misc
+    id: 7,
     name: 'faster',
     // Stats
     cash: 4,
@@ -149,6 +156,7 @@ enemy.tank = {
     color: [30, 130, 76],
     radius: 1,
     // Misc
+    id: 8,
     name: 'tank',
     // Stats
     cash: 4,
@@ -183,6 +191,7 @@ enemy.taunt = {
     color: [102, 51, 153],
     radius: 0.8,
     // Misc
+    id: 9,
     name: 'taunt',
     sound: 'taunt',
     // Stats
@@ -215,6 +224,7 @@ enemy.spawner = {
     color: [244, 232, 66],
     radius: 0.7,
     // Misc
+    id: 10,
     name: 'spawner',
     // Stats
     cash: 10,

@@ -1,17 +1,18 @@
 // Provides interface for agent to interact with environment
 env = {
+    score: 0,
     reset: function () {
         // Stop .p5 game loop
         noLoop();
-        resetGame();
+        resetGame(false);
+        render ? draw() : tickWithoutRender();
         return _getState();
     },
     step: function (actions) {
         _applyActions(actions);
-        if (render) {
-            draw();
-        } else {
-            tickWithoutRender();
+        // TODO determine ticks per action
+        for (let i = 0; i < 60; i++){
+            render ? draw() : tickWithoutRender();
         }
         return _getState();
     }
@@ -27,7 +28,8 @@ function _applyActions(actions) {
 }
 
 function _getReward(){
-    // TODO
+    // Calculate reward as a difference in score
+
 }
 
 function _getDone(){
@@ -52,11 +54,14 @@ function _getObservation() {
        tower_grid[t.gridPos.x][t.gridPos.y] = t.id;
     });
 
-    let alive_enemies_type_and_pos = [];
+    // array of 700 enemies with their absolute position and type
+    let alive_enemies_type_and_pos = buildArray(1, 700, [0, 0, 0])[0];
 
-    enemies.forEach((e) => {
-        // TODO find gridpos and encode with max length array
+    enemies.forEach((e, i) => {
+        let grid_position = gridPos(e.pos.x, e.pos.y);
+        alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
     });
 
     return [grid, spawn_and_temp_tiles, wave, health, cash, exit_location, tower_grid, alive_enemies_type_and_pos];
 }
+
