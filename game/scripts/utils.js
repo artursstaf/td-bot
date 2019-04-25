@@ -27,7 +27,7 @@ function buildArray(cols, rows, val) {
 
 // Return position at center of tile
 function center(col, row) {
-    return createVector(col*ts + ts/2, row*ts + ts/2);
+    return createVector(col * ts + ts / 2, row * ts + ts / 2);
 }
 
 // Copy 2d array
@@ -269,10 +269,13 @@ function vts(v) {
     return v.x + ',' + v.y
 }
 
-function create2DZerosLike(shape){
-    let arr = new Array(shape[0]);
-    for (let i = 0; i < shape[0]; i++){
-        arr[i] = new Array(shape[1]).fill(0);
-    }
+function randomOneHotOfDepth(depth) {
+    let randomInteger = Math.floor(Math.random() * depth);
+    let arr = new Array(depth).fill(0);
+    arr[randomInteger] = 1;
     return arr;
+}
+
+function argMax(array) {
+    return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }

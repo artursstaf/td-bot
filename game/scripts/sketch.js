@@ -687,7 +687,9 @@ function upgrade(t) {
         if (!godMode) cash -= t.cost;
         selected.upgrade(t);
         selected.upgrades = t.upgrades ? t.upgrades : [];
-        updateInfo(selected);
+        if(render){
+            updateInfo(selected);
+        }
     }
 }
 

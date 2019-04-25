@@ -4,9 +4,9 @@ env = {
         // Stop .p5 game loop
         noLoop();
         resetGame(false);
-        if(render){
+        if (render) {
             draw();
-        }else{
+        } else {
             tickWithoutRender();
         }
 
@@ -22,13 +22,13 @@ env = {
 
         // TODO determine ticks per action
         let died = false;
-        for (let i = 0; i < 120; i++){
-            if(render){
+        for (let i = 0; i < 120; i++) {
+            if (render) {
                 died = draw();
-            }else{
+            } else {
                 died = tickWithoutRender();
             }
-            if(died) break;
+            if (died) break;
         }
 
         // Ignore cash loss from buying towers
@@ -39,16 +39,44 @@ env = {
 };
 
 // Return Observation, Reward, Done tuple
-function getState(isDone){
+function getState(isDone) {
     return [getObservation(), getReward(isDone), isDone];
 }
 
-function applyActions(actions) {
-
+function getRandomAction() {
+    // [[buy, upgrade, nothing],[tower type],
+    // [ one hot X coordinate], [one hot Y coordinate]]
+    return [randomOneHotOfDepth(3), randomOneHotOfDepth(7),
+        randomOneHotOfDepth(60), randomOneHotOfDepth(40)]
 }
 
-function getReward(isDone){
-    if(isDone)
+function applyActions(actions) {
+    let action = argMax(actions[0]);
+    let towerType = argMax(actions[1]) + 1;
+    let x = argMax(actions[2]);
+    let y = argMax(actions[3]);
+
+    switch (action) {
+        case 0: // Buy
+            toPlace = true;
+            if(canPlace(x, y)){
+                buy(createTower(x, y, tower[tower.idToName[towerType]]))
+            }
+            break;
+        case 1: // Upgrade
+            let t = getTower(x, y);
+            if(t && t.upgrades.length > 0){
+                selected = t;
+                upgrade(t.upgrades[0]);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+function getReward(isDone) {
+    if (isDone)
         return -10.0;
     // Wave - sparse reward
     // Cash -> health -> wave
@@ -58,11 +86,12 @@ function getReward(isDone){
     return diff;
 }
 
-function getScore(){
+function getScore() {
     return Math.max(wave, 1) + 0.3 * health + 0.055 * env.total_cash_acquired;
 }
 
 function getObservation() {
+    // TODO What values does grid take??
     let map = [...grid];
 
     spawnpoints.forEach((s) => {
