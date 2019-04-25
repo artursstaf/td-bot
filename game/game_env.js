@@ -63,21 +63,20 @@ function getScore(){
 }
 
 function getObservation() {
-    let spawn_and_temp_tiles = create2DZerosLike([cols, rows]);
+    let map = [...grid];
 
     spawnpoints.forEach((s) => {
-        spawn_and_temp_tiles[s.x][s.y] = 1;
+        map[s.x][s.y] = 15;
     });
     tempSpawns.forEach((s) => {
-        spawn_and_temp_tiles[s.x][s.y] = 1;
+        map[s.x][s.y] = 16;
     });
 
-    let exit_location = [exit.x, exit.y];
+    // Exit location
+    map[exit.x][exit.y] = 17;
 
-    // 0 no tower, 1 - 14 tower types
-    let tower_grid = create2DZerosLike([cols, rows]);
     towers.forEach((t) => {
-       tower_grid[t.gridPos.x][t.gridPos.y] = t.id;
+        map[t.gridPos.x][t.gridPos.y] = t.id;
     });
 
     // array of 700 enemies with their absolute position and type
@@ -88,6 +87,6 @@ function getObservation() {
         alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
     });
 
-    return [grid, spawn_and_temp_tiles, wave, health, cash, exit_location, tower_grid, alive_enemies_type_and_pos];
+    return [map, wave, health, cash, alive_enemies_type_and_pos];
 }
 
