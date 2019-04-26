@@ -412,7 +412,18 @@ function randomMap(numSpawns) {
         // Try to place spawnpoint
         for (let j = 0; j < 100; j++) {
             s = getEmpty();
-            while (!visitMap[vts(s)]) s = getEmpty();
+
+            // Try to find walkable exit 50 times if cant, just generate new map
+            for(let z = 0; z < 50; z++){
+                if(visitMap[vts(s)]) break;
+                s = getEmpty();
+            }
+
+            if(!visitMap[vts(s)]){
+                randomMap(numSpawns);
+                return;
+            }
+
             if (s.dist(exit) >= minDist) break;
         }
         spawnpoints.push(s);
@@ -605,7 +616,7 @@ function resetGame(pause_game = true) {
     health = 40;
     maxHealth = health;
     wave = 0;
-    wcd = 0;
+    wcd = 120;
     // Reset all flags
     paused = pause_game;
     scd = 0;
@@ -1094,17 +1105,7 @@ function tickWithoutRender() {
     return false;
 }
 
-function run100kTicks() {
-    let start = new Date().getTime();
 
-    for (let i = 0; i < 100000; i++) {
-        tickWithoutRender();
-    }
-
-    let end = new Date().getTime();
-    console.log(end - start);
-
-}
 
 // User input
 function keyPressed() {

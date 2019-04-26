@@ -43,11 +43,11 @@ function getState(isDone) {
     return [getObservation(), getReward(isDone), isDone];
 }
 
-function getRandomAction() {
-    // [[buy, upgrade, nothing],[tower type],
+function randomAction() {
+    // [[buy, upgrade, sell, nothing],[tower type],
     // [ one hot X coordinate], [one hot Y coordinate]]
-    return [randomOneHotOfDepth(3), randomOneHotOfDepth(7),
-        randomOneHotOfDepth(60), randomOneHotOfDepth(40)]
+    return [randomOneHotOfDepth(4), randomOneHotOfDepth(7),
+        randomOneHotOfDepth(cols), randomOneHotOfDepth(rows)]
 }
 
 function applyActions(actions) {
@@ -64,12 +64,17 @@ function applyActions(actions) {
             }
             break;
         case 1: // Upgrade
-            let t = getTower(x, y);
+            var t = getTower(x, y);
             if(t && t.upgrades.length > 0){
                 selected = t;
                 upgrade(t.upgrades[0]);
             }
             break;
+        case 2: // Sell
+            var t = getTower(x, y);
+            if(t){
+                sell(t);
+            }
         default:
             break;
     }
