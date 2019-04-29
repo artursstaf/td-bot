@@ -6,7 +6,7 @@ from stable_baselines.common.input import observation_input
 from stable_baselines.common.policies import MlpPolicy, LstmPolicy
 import tensorflow as tf
 from tensorflow.python.keras.layers import Embedding
-from training.benchmarking_testing.benchmark_wrapper import run10k_episodes
+from training.benchmarking_testing.benchmark_wrapper import run_k_episodes
 from training.env_wrapper import JsTdWrap
 from training.td_env import TdEnv
 

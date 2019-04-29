@@ -3,7 +3,7 @@ import time
 from training.env_wrapper import JsTdWrap
 
 
-def run10k_episodes(k):
+def run_k_episodes(k):
     env = JsTdWrap()
 
     start = time.monotonic()
@@ -15,3 +15,6 @@ def run10k_episodes(k):
                 break
     end = time.monotonic()
     return end - start
+
+if __name__ == "__main__":
+    print(run_k_episodes(1000))
