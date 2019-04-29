@@ -5,7 +5,6 @@ function createTower(x, y, template) {
     return t;
 }
 
-
 var tower = {};
 
 tower.idToName = {
@@ -99,7 +98,7 @@ tower.laser = {
                 }
                 //var damage = this.damageMin * pow(2, this.duration);
                 var d = random(this.damageMin, this.damageMax);
-                var damage = d * sq(this.duration);
+                var damage = d * window.sq(this.duration);
                 e.dealDamage(damage, this.type);
                 this.onHit(e);
             }
@@ -160,7 +159,7 @@ tower.slow = {
         }
     },
     update() {
-        this.angle += PI / 60;
+        this.angle += window.PI / 60;
         if (this.cd > 0) this.cd--;
     },
     // Upgrades
@@ -210,7 +209,7 @@ tower.sniper = {
     drawBarrel: function() {
         stroke(0);
         fill(this.color);
-        var height = this.radius * ts * sqrt(3) / 2;
+        var height = this.radius * ts * window.sqrt(3) / 2;
         var back = -height / 3;
         var front = height * 2 / 3;
         var side = this.radius * ts / 2;
@@ -278,7 +277,7 @@ tower.sniper = {
                 }
                 for (var i = 0; i < inRadius.length; i++) {
                     var h = inRadius[i];
-                    var amt = round(random(this.damageMin, this.damageMax));
+                    var amt = Math.round(random(this.damageMin, this.damageMax));
                     h.dealDamage(amt, this.type);
                 }
             }
@@ -448,7 +447,7 @@ tower.bomb = {
         }
         for (var i = 0; i < inRadius.length; i++) {
             var h = inRadius[i];
-            var amt = round(random(this.damageMin, this.damageMax));
+            var amt = Math.round(random(this.damageMin, this.damageMax));
             h.dealDamage(amt, this.type);
         }
     },
@@ -506,7 +505,7 @@ tower.bomb = {
                     }
                     for (var j = 0; j < inRadius.length; j++) {
                         var h = inRadius[j];
-                        var amt = round(random(this.damageMin, this.damageMax));
+                        var amt = Math.round(random(this.damageMin, this.damageMax));
                         h.dealDamage(amt, this.type);
                     }
                 }
@@ -552,7 +551,7 @@ tower.tesla = {
 
         var last = e;
         var targets = [];
-        var dmg = round(random(this.damageMin, this.damageMax));
+        var dmg = Math.round(random(this.damageMin, this.damageMax));
         if(render){
             var weight = this.weight;
             stroke(this.color);
@@ -616,7 +615,7 @@ tower.tesla = {
 
                 var last = e;
                 var targets = [];
-                var dmg = round(random(this.damageMin, this.damageMax));
+                var dmg = Math.round(random(this.damageMin, this.damageMax));
                 if(render){
                     var weight = this.weight;
                     stroke(this.color);
@@ -634,8 +633,8 @@ tower.tesla = {
                     if (typeof next === 'undefined') break;
                     if(render){
                         strokeWeight(weight);
-                        var x = random(last.pos.x, next.pos.x);
-                        var y = random(last.pos.y, next.pos.y);
+                        var x = window.random(last.pos.x, next.pos.x);
+                        var y = window.random(last.pos.y, next.pos.y);
                         line(last.pos.x, last.pos.y, x, y);
                         line(x, y, next.pos.x, next.pos.y);
                     }

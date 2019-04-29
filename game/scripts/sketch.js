@@ -77,6 +77,7 @@ let wallCover = 0.1;    // percentage of map covered by walls
 const waveCool = 120;     // number of ticks between waves
 const weakness = 0.5;     // damage increase from weakness
 let render = true;
+let ticks = 0;
 
 // Misc functions
 
@@ -145,6 +146,7 @@ function canSpawn() {
 
 // Clear tower information
 function clearInfo() {
+    if (!render) return;
     document.getElementById('info-div').style.display = 'none';
 }
 
@@ -391,7 +393,7 @@ function randomMap(numSpawns) {
     for (let x = 0; x < cols; x++) {
         grid[x] = [];
         for (let y = 0; y < rows; y++) {
-            grid[x][y] = random() < wallCover ? 1 : 0;
+            grid[x][y] = window.random() < wallCover ? 1 : 0;
         }
     }
     walkMap = getWalkMap();
@@ -414,12 +416,12 @@ function randomMap(numSpawns) {
             s = getEmpty();
 
             // Try to find walkable exit 50 times if cant, just generate new map
-            for(let z = 0; z < 50; z++){
-                if(visitMap[vts(s)]) break;
+            for (let z = 0; z < 50; z++) {
+                if (visitMap[vts(s)]) break;
                 s = getEmpty();
             }
 
-            if(!visitMap[vts(s)]){
+            if (!visitMap[vts(s)]) {
                 randomMap(numSpawns);
                 return;
             }
@@ -432,7 +434,7 @@ function randomMap(numSpawns) {
 
 // Random grid coordinate
 function randomTile() {
-    return createVector(randint(cols), randint(rows));
+    return window.createVector(randint(cols), randint(rows));
 }
 
 // Generate a random wave
@@ -535,7 +537,7 @@ function randomWave() {
         waves.push([0, ['taunt', 'faster', 200]]);
     }
 
-    return random(waves);
+    return window.random(waves);
 }
 
 // Recalculate pathfinding maps
@@ -623,6 +625,7 @@ function resetGame(pause_game = true) {
     toCooldown = false;
     toPathfind = false;
     toPlace = false;
+    ticks = 0;
 }
 
 // Resizes cols, rows, and canvas based on tile size
@@ -660,6 +663,7 @@ function showRange(t, cx, cy) {
 
 // Display tower information
 function updateInfo(t) {
+    if (!render) return;
     const name = document.getElementById('name');
     name.innerHTML = '<span style="color:rgb(' + t.color + ')">' + t.title +
         '</span>';
@@ -681,11 +685,13 @@ function updateInfo(t) {
 
 // Update pause button
 function updatePause() {
+    if(!render) return;
     document.getElementById('pause').innerHTML = paused ? 'Start' : 'Pause';
 }
 
 // Update samples status display with wave, health, and cash
 function updateStatus() {
+    if(!render) return;
     document.getElementById('wave').innerHTML = 'Wave ' + wave;
     document.getElementById('health').innerHTML = 'Health: ' +
         health + '/' + maxHealth;
@@ -698,7 +704,7 @@ function upgrade(t) {
         if (!godMode) cash -= t.cost;
         selected.upgrade(t);
         selected.upgrades = t.upgrades ? t.upgrades : [];
-        if(render){
+        if (render) {
             updateInfo(selected);
         }
     }
@@ -715,16 +721,18 @@ function walkable(col, row) {
 
 
 // Main p5 functions
-
 function preload() {
+    if (!render) return;
     loadSounds();
 }
 
 function setup() {
+    if (!render) return;
     const div = document.getElementById('sketch-holder');
     const canvas = createCanvas(div.offsetWidth, div.offsetHeight);
     canvas.parent('sketch-holder');
     resetGame();
+
 }
 
 function draw() {
@@ -933,7 +941,7 @@ function draw() {
     newTowers = [];
 
     // If player is dead, reset samples
-    if (health <= 0){
+    if (health <= 0) {
         resetGame();
         return true;
     }
@@ -962,6 +970,15 @@ function draw() {
         recalculate();
         toPathfind = false;
     }
+
+    if (ticks % ticksPerActions === 1) {
+        applyActions(randomAction())
+    }
+
+    if (!paused) {
+        ticks++;
+    }
+
     return false;
 }
 
@@ -1073,7 +1090,7 @@ function tickWithoutRender() {
     showEffects = oldParticles;
 
     // If player is dead, reset samples
-    if (health <= 0){
+    if (health <= 0) {
         resetGame();
         return true;
     }
@@ -1104,7 +1121,6 @@ function tickWithoutRender() {
     }
     return false;
 }
-
 
 
 // User input

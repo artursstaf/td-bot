@@ -23,8 +23,8 @@ class Tower {
 
         // Position
         this.angle = 0;
-        this.gridPos = createVector(col, row);
-        this.pos = createVector(col*ts + ts/2, row*ts + ts/2);
+        this.gridPos = window.createVector(col, row);
+        this.pos = window.createVector(col*ts + ts/2, row*ts + ts/2);
         
         // Stats
         this.cooldownMax = 0;
@@ -40,12 +40,12 @@ class Tower {
 
     // Adjust angle to point towards pixel position
     aim(x, y) {
-        this.angle = atan2(y - this.pos.y, x - this.pos.x);
+        this.angle = window.atan2(y - this.pos.y, x - this.pos.x);
     }
 
     // Deal damage to enemy
     attack(e) {
-        var damage = round(random(this.damageMin, this.damageMax));
+        var damage = Math.round(window.random(this.damageMin, this.damageMax));
         e.dealDamage(damage, this.type);
         if (!muteSounds && sounds.hasOwnProperty(this.sound)) {
             sounds[this.sound].play();
@@ -127,13 +127,13 @@ class Tower {
     onHit(e) {}
 
     resetCooldown() {
-        var cooldown = round(random(this.cooldownMin, this.cooldownMax));
+        var cooldown = Math.round(window.random(this.cooldownMin, this.cooldownMax));
         this.cd = cooldown;
     }
 
     // Sell price
     sellPrice() {
-        return floor(this.totalCost * sellConst);
+        return Math.floor(this.totalCost * sellConst);
     }
 
     // Target correct enemy

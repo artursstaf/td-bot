@@ -244,7 +244,7 @@ enemy.spawner = {
             for (var i = 0; i < tempSpawns.length; i++) {
                 if (c.equals(tempSpawns[i][0])) return;
             }
-            tempSpawns.push([createVector(c.x, c.y), tempSpawnCount]);
+            tempSpawns.push([window.createVector(c.x, c.y), tempSpawnCount]);
         }
     }
 };

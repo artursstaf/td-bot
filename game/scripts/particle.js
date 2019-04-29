@@ -34,10 +34,10 @@ class Particle {
 class Fire extends Particle {
     constructor(pos, speed) {
         super(pos, speed);
-        this.angle = random(TWO_PI);
-        this.angVel = random(-1, 1);
-        this.decay = random(3, 6);
-        this.color = [200 + random(55), random(127), random(31)];
+        this.angle = window.random(TWO_PI);
+        this.angVel = window.random(-1, 1);
+        this.decay = window.random(3, 6);
+        this.color = [200 + window.random(55), window.random(127), window.random(31)];
         this.radius = randint(2, 6);
     }
 
@@ -65,8 +65,8 @@ class Fire extends Particle {
 class Bomb extends Particle {
     constructor(pos, speed) {
         super(pos, speed);
-        this.decay = random(8, 10);
-        this.color = [151 + random(80), 45 + random(60), 200 + random(55)];
+        this.decay = window.random(8, 10);
+        this.color = [151 + window.random(80), 45 + window.random(60), 200 + window.random(55)];
         this.radius = randint(2, 6);
     }
 }
@@ -75,8 +75,8 @@ class Bomb extends Particle {
 class Shrapnel extends Fire {
     constructor(pos, speed) {
         super(pos, speed);
-        this.decay = random(8, 10);
-        var r = 63 + random(127);
+        this.decay = window.random(8, 10);
+        var r = 63 + window.random(127);
         this.color = [r, r, r];
         this.radius = randint(2, 6);
     }

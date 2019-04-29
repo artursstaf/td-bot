@@ -12,8 +12,8 @@ class Enemy {
         this.sound = 'pop';         // death sound
 
         // Position
-        this.pos = createVector(x, y);
-        this.vel = createVector(0, 0);
+        this.pos = window.createVector(x, y);
+        this.vel = window.createVector(0, 0);
         
         // Stats
         this.cash = 0;
@@ -70,7 +70,7 @@ class Enemy {
         stroke(255);
         fill(207, 0, 15);
         var edge = 0.7 * ts / 2;
-        var width = floor(edge * percent * 2);
+        var width = Math.floor(edge * percent * 2);
         var top = 0.2 * ts;
         var height = 0.15 * ts;
         rect(-edge, top, edge * percent * 2, height);
@@ -128,10 +128,10 @@ class Enemy {
             if (dir === null) return;
             // Adjust velocity
             var speed = this.pxSpeed();
-            if (dir === 1) this.vel = createVector(-speed, 0);
-            if (dir === 2) this.vel = createVector(0, -speed);
-            if (dir === 3) this.vel = createVector(speed, 0);
-            if (dir === 4) this.vel = createVector(0, speed);
+            if (dir === 1) this.vel = window.createVector(-speed, 0);
+            if (dir === 2) this.vel = window.createVector(0, -speed);
+            if (dir === 3) this.vel = window.createVector(speed, 0);
+            if (dir === 4) this.vel = window.createVector(0, speed);
         }
     }
 

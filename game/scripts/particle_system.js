@@ -1,6 +1,6 @@
 class ParticleSystem {
     constructor(x, y) {
-        this.origin = createVector(x, y);
+        this.origin = window.createVector(x, y);
         this.particles = [];
     }
 

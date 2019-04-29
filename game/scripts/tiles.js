@@ -10,7 +10,7 @@ var tiles = {
         push();
         var c = center(x, y);
         translate(c.x, c.y);
-        rotate([0, PI / 2, PI, PI * 3 / 2][dir - 1]);
+        rotate([0, window.PI / 2, window.PI, window.PI * 3 / 2][dir - 1]);
 
         noStroke();
         fill(250, 210, 1);
@@ -25,7 +25,7 @@ var tiles = {
         push();
         var c = center(x, y);
         translate(c.x, c.y);
-        rotate([PI / 2, PI, PI * 3 / 2, 0][dir - 1]);
+        rotate([window.PI / 2, window.PI, window.PI * 3 / 2, 0][dir - 1]);
     
         noStroke();
         fill(250, 210, 1);
@@ -40,7 +40,7 @@ var tiles = {
         push();
         var c = center(x, y);
         translate(c.x, c.y);
-        rotate([0, PI / 2][(dir - 1) % 2]);
+        rotate([0, window.PI / 2][(dir - 1) % 2]);
 
         noStroke();
         fill(250, 210, 1);

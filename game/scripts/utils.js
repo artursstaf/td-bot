@@ -1,4 +1,4 @@
-new p5();   // p5.js global mode
+new window.p5();   // p5.js global mode
 
 
 // Check if approximately at tile center
@@ -27,7 +27,7 @@ function buildArray(cols, rows, val) {
 
 // Return position at center of tile
 function center(col, row) {
-    return createVector(col * ts + ts / 2, row * ts + ts / 2);
+    return window.createVector(col * ts + ts / 2, row * ts + ts / 2);
 }
 
 // Copy 2d array
@@ -175,11 +175,11 @@ function getTaunting(entities) {
 
 // Return grid coordinate
 function gridPos(x, y) {
-    return createVector(floor(x / ts), floor(y / ts));
+    return window.createVector(Math.floor(x / ts), Math.floor(y / ts));
 }
 
 function insideCircle(x, y, cx, cy, r) {
-    return sq(x - cx) + sq(y - cy) < sq(r);
+    return window.sq(x - cx) + window.sq(y - cy) < window.sq(r);
 }
 
 function mouseInMap() {
@@ -221,7 +221,7 @@ function polygon(x, y, radius, npoints) {
 
 // Returns a random integer, using the same arguments as p5js random()
 function randint() {
-    return floor(random(...arguments));
+    return Math.floor(window.random(...arguments));
 }
 
 // Displays a range of numbers
@@ -261,7 +261,7 @@ function replaceArray(arr, vals, subs) {
 // Convert string to vector
 function stv(str) {
     var arr = str.split(',');
-    return createVector(parseInt(arr[0]), parseInt(arr[1]));
+    return window.createVector(parseInt(arr[0]), parseInt(arr[1]));
 }
 
 // Convert vector to string

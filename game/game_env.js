@@ -1,8 +1,21 @@
 // Provides interface for agent to interact with environment
+let ticksPerActions = 120;
+let recordedEnemiesCount = 1500;
+width = 1440;
+height = 960;
+
+function envReset(){
+    return env.reset();
+}
+
+function envStep(actions){
+    return env.step(actions);
+}
+
 env = {
     reset: function () {
         // Stop .p5 game loop
-        noLoop();
+        window.noLoop();
         resetGame(false);
         if (render) {
             draw();
@@ -22,7 +35,7 @@ env = {
 
         // TODO determine ticks per action
         let died = false;
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < ticksPerActions; i++) {
             if (render) {
                 died = draw();
             } else {
@@ -96,7 +109,6 @@ function getScore() {
 }
 
 function getObservation() {
-    // TODO What values does grid take??
     let map = [...grid];
 
     spawnpoints.forEach((s) => {
@@ -114,7 +126,7 @@ function getObservation() {
     });
 
     // array of 700 enemies with their absolute position and type
-    let alive_enemies_type_and_pos = buildArray(1, 1500, [0, 0, 0])[0];
+    let alive_enemies_type_and_pos = buildArray(1, recordedEnemiesCount, [0, 0, 0])[0];
 
     enemies.forEach((e, i) => {
         let grid_position = gridPos(e.pos.x, e.pos.y);

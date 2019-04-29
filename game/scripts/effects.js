@@ -47,6 +47,6 @@ effects.regen = {
     name: 'regen',
     // Methods
     onTick: function(e) {
-        if (e.health < e.maxHealth && random() < 0.2) e.health++;
+        if (e.health < e.maxHealth && window.random() < 0.2) e.health++;
     }
 };

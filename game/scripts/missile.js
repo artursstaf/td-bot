@@ -1,9 +1,9 @@
 class Missile {
     constructor(x, y, e) {
         // Physics
-        this.pos = createVector(x, y);
-        this.vel = createVector(0, 0);
-        this.acc = createVector(0, 0);
+        this.pos = window.createVector(x, y);
+        this.vel = window.createVector(0, 0);
+        this.acc = window.createVector(0, 0);
         // Display
         this.color = [207, 0, 15];
         this.secondary = [189, 195, 199];
@@ -66,7 +66,7 @@ class Missile {
         }
         for (var i = 0; i < inRadius.length; i++) {
             var e = inRadius[i];
-            var damage = round(random(this.damageMax, this.damageMin));
+            var damage = Math.round(window.random(this.damageMax, this.damageMin));
             e.dealDamage(damage, 'explosion');
         }
         this.kill();
