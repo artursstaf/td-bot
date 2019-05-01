@@ -1,7 +1,7 @@
 class Particle {
     constructor(pos, speed) {
         this.pos = pos.copy();
-        this.vel = p5.Vector.random2D().mult(random(-1, 1) * speed * ts / 24);
+        this.vel = window.p5.Vector.random2D().mult(window.random(-1, 1) * speed * ts / 24);
         this.lifespan = 255;
         this.decay = 2;
         this.color = [0, 0, 0];

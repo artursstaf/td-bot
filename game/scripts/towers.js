@@ -97,7 +97,7 @@ tower.laser = {
                     this.duration = 0;
                 }
                 //var damage = this.damageMin * pow(2, this.duration);
-                var d = random(this.damageMin, this.damageMax);
+                var d = window.random(this.damageMin, this.damageMax);
                 var damage = d * window.sq(this.duration);
                 e.dealDamage(damage, this.type);
                 this.onHit(e);
@@ -277,7 +277,7 @@ tower.sniper = {
                 }
                 for (var i = 0; i < inRadius.length; i++) {
                     var h = inRadius[i];
-                    var amt = Math.round(random(this.damageMin, this.damageMax));
+                    var amt = Math.round(window.random(this.damageMin, this.damageMax));
                     h.dealDamage(amt, this.type);
                 }
             }
@@ -447,7 +447,7 @@ tower.bomb = {
         }
         for (var i = 0; i < inRadius.length; i++) {
             var h = inRadius[i];
-            var amt = Math.round(random(this.damageMin, this.damageMax));
+            var amt = Math.round(window.random(this.damageMin, this.damageMax));
             h.dealDamage(amt, this.type);
         }
     },
@@ -489,7 +489,7 @@ tower.bomb = {
                     systems.push(s);
                 }
                 var segs = 3;
-                var a0 = random(0, TWO_PI);
+                var a0 = window.random(0, TWO_PI);
                 for (var i = 0; i < segs; i++) {
                     var a = TWO_PI / segs * i + a0;
                     var d = 2 * ts;
@@ -505,7 +505,7 @@ tower.bomb = {
                     }
                     for (var j = 0; j < inRadius.length; j++) {
                         var h = inRadius[j];
-                        var amt = Math.round(random(this.damageMin, this.damageMax));
+                        var amt = Math.round(window.random(this.damageMin, this.damageMax));
                         h.dealDamage(amt, this.type);
                     }
                 }
@@ -551,7 +551,7 @@ tower.tesla = {
 
         var last = e;
         var targets = [];
-        var dmg = Math.round(random(this.damageMin, this.damageMax));
+        var dmg = Math.round(window.random(this.damageMin, this.damageMax));
         if(render){
             var weight = this.weight;
             stroke(this.color);
@@ -569,8 +569,8 @@ tower.tesla = {
             if (typeof next === 'undefined') break;
             if(render){
                 strokeWeight(weight);
-                var x = random(last.pos.x, next.pos.x);
-                var y = random(last.pos.y, next.pos.y);
+                var x = window.random(last.pos.x, next.pos.x);
+                var y = window.random(last.pos.y, next.pos.y);
                 line(last.pos.x, last.pos.y, x, y);
                 line(x, y, next.pos.x, next.pos.y);
             }
@@ -615,7 +615,7 @@ tower.tesla = {
 
                 var last = e;
                 var targets = [];
-                var dmg = Math.round(random(this.damageMin, this.damageMax));
+                var dmg = Math.round(window.random(this.damageMin, this.damageMax));
                 if(render){
                     var weight = this.weight;
                     stroke(this.color);

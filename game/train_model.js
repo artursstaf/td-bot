@@ -13,3 +13,14 @@ async function train() {
     }
     console.log(new Date().getTime() - start);
 }
+
+function countSteps(){
+    let i = 0;
+    render = false;
+    env.reset();
+    while(wave < 25){
+        [obs, reward, done] = env.step([1, 1, 1, 1]);
+        i++;
+        console.log(`Step: ${i} wave: ${wave}, enemies: ${enemies.length}`);
+    }
+}

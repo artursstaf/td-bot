@@ -630,8 +630,8 @@ function resetGame(pause_game = true) {
 
 // Resizes cols, rows, and canvas based on tile size
 function resizeMax() {
-    cols = 60;
-    rows = 40;
+    cols = 21;
+    rows = 20;
     if (render) {
         resizeCanvas(cols * ts, rows * ts, true);
     }
@@ -971,13 +971,13 @@ function draw() {
         toPathfind = false;
     }
 
-    if (ticks % ticksPerActions === 1) {
+/*    if (ticks % ticksPerActions === 1) {
         applyActions(randomAction())
     }
 
     if (!paused) {
         ticks++;
-    }
+    }*/
 
     return false;
 }

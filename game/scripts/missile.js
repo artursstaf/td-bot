@@ -105,7 +105,7 @@ class Missile {
     steer() {
         if (!this.target.alive) return;
         var dist = this.pos.dist(this.target.pos);
-        var unit = p5.Vector.sub(this.target.pos, this.pos).normalize();
+        var unit = window.p5.Vector.sub(this.target.pos, this.pos).normalize();
         this.acc.add(unit.mult(this.accAmt));
     }
 

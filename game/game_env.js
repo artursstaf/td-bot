@@ -1,8 +1,8 @@
 // Provides interface for agent to interact with environment
 let ticksPerActions = 30;
-let recordedEnemiesCount = 1500;
-width = 1440;
-height = 960;
+let recordedEnemiesCount = 100;
+width = 504;
+height = 480;
 
 function envReset(){
     return env.reset();
@@ -59,31 +59,33 @@ function getState(isDone) {
 function randomAction() {
     // [[buy, upgrade, sell, nothing],[tower type],
     // [ one hot X coordinate], [one hot Y coordinate]]
-    return [randomOneHotOfDepth(4), randomOneHotOfDepth(7),
-        randomOneHotOfDepth(cols), randomOneHotOfDepth(rows)]
+    return [randomInt(4), randomInt(7),
+        randomInt(cols), randomInt(rows)]
 }
 
 function applyActions(actions) {
-    let action = argMax(actions[0]);
-    let towerType = argMax(actions[1]) + 1;
-    let x = argMax(actions[2]);
-    let y = argMax(actions[3]);
+    let action = actions[0];
+    let towerType = actions[1] + 1;
+    let x = actions[2];
+    let y = actions[3];
 
     switch (action) {
-        case 0: // Buy
+        case 0:
+            break;
+        case 1: // Buy
             toPlace = true;
             if(canPlace(x, y)){
                 buy(createTower(x, y, tower[tower.idToName[towerType]]))
             }
             break;
-        case 1: // Upgrade
+        case 2: // Upgrade
             var t = getTower(x, y);
             if(t && t.upgrades.length > 0){
                 selected = t;
                 upgrade(t.upgrades[0]);
             }
             break;
-        case 2: // Sell
+        case 3: // Sell
             var t = getTower(x, y);
             if(t){
                 sell(t);
@@ -130,7 +132,9 @@ function getObservation() {
 
     enemies.forEach((e, i) => {
         let grid_position = gridPos(e.pos.x, e.pos.y);
-        alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
+        if(i < alive_enemies_type_and_pos.length){
+            alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
+        }
     });
 
     return [map, wave, health, cash, alive_enemies_type_and_pos];
