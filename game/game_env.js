@@ -116,9 +116,17 @@ function getObservation() {
     spawnpoints.forEach((s) => {
         map[s.x][s.y] = 15;
     });
+
     tempSpawns.forEach((s) => {
-        map[s.x][s.y] = 16;
+        try{
+            map[s.x][s.y] = 16;
+        }catch (e) {
+            console.log(s);
+            console.log(map);
+            throw e;
+        }
     });
+
 
     // Exit location
     map[exit.x][exit.y] = 17;
