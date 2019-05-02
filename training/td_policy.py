@@ -48,7 +48,7 @@ class TdPolicy(ActorCriticPolicy):
             enemies = tf.reshape(enemies, [tf.shape(enemies)[0], rec_enemies, 3])
 
             # Embeddings for grid - tile,tower,block types
-            tile_type_embeddings = tf.get_variable("tile_embeddings", [18, 5])
+            tile_type_embeddings = tf.get_variable("tile_embeddings", [19, 5])
             embedded_tiles = tf.layers.flatten(tf.nn.embedding_lookup(tile_type_embeddings, tf.cast(grid, tf.int32)))
             grid = act_fun(linear(embedded_tiles, "embedding_tiles_fc1", 128, init_scale=np.sqrt(2)))
 

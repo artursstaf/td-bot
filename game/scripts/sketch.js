@@ -519,6 +519,7 @@ function randomWave() {
             ['faster', 50]
         ]);
     }
+
     if (isWave(25)) {
         waves.push([5, ['taunt', 'medic', 'tank', 50], ['faster', 50]]);
         waves.push([5, ['taunt', 'faster', 'faster', 'faster', 50]]);
@@ -527,12 +528,14 @@ function randomWave() {
             ['faster', 50]
         ]);
     }
+
     if (isWave(30)) {
         waves.push([5, ['taunt', 'faster', 'faster', 'faster', 50]]);
         waves.push([5, ['taunt', 'tank', 'tank', 'tank', 50]]);
         waves.push([5, ['taunt', 'medic', 'tank', 'tank', 50]]);
         waves.push([1, ['faster', 200]]);
     }
+
     if (isWave(35)) {
         waves.push([0, ['taunt', 'faster', 200]]);
     }
@@ -630,8 +633,8 @@ function resetGame(pause_game = true) {
 
 // Resizes cols, rows, and canvas based on tile size
 function resizeMax() {
-    cols = 21;
-    rows = 20;
+    cols = 22;
+    rows = 22;
     if (render) {
         resizeCanvas(cols * ts, rows * ts, true);
     }
@@ -942,7 +945,6 @@ function draw() {
 
     // If player is dead, reset samples
     if (health <= 0) {
-        resetGame();
         return true;
     }
 
@@ -1091,7 +1093,6 @@ function tickWithoutRender() {
 
     // If player is dead, reset samples
     if (health <= 0) {
-        resetGame();
         return true;
     }
 

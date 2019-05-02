@@ -1,11 +1,15 @@
 # %%
+import traceback
+from functools import reduce
+
 import gym
 from gym import spaces
 import numpy as np
 from training.env_wrapper import JsTdWrap
+from training.td_callback import log_dir
 
-cols = 21
-rows = 20
+cols = 22
+rows = 22
 rec_enemies = 100
 obs_shape = cols * rows + 1 + 1 + 1 + 3 * rec_enemies
 
@@ -14,7 +18,7 @@ def _preprocess_observation(obs):
     grid, wave, health, cash, alive_enemies = obs
 
     grid = np.reshape(np.array(grid, dtype='float32'), cols * rows)
-    wave = np.array([wave], dtype='float32') / 22
+    wave = np.array([wave], dtype='float32') / 36
     health = np.array([health], dtype='float32') / 40.0
     cash = np.array([cash], dtype='float32') / 65.0 * 2
     alive_enemies = np.array(alive_enemies, dtype='float32')
@@ -36,7 +40,7 @@ class TdEnv(gym.Env):
         self.JsEnv = JsTdWrap()
         # [[buy, upgrade, sell, nothing], [tower type],
         # [one hot X coordinate], [one hot Y coordinate]]
-        self.action_space = spaces.MultiDiscrete([4, 7, 21, 20])
+        self.action_space = spaces.MultiDiscrete([4, 7, cols, rows])
         # Dummy space
         self.observation_space = TdObsSpace()
 
@@ -48,7 +52,17 @@ class TdEnv(gym.Env):
 
     def step(self, action):
         action = action.tolist()
-        obs, reward, done = self.JsEnv.step(action)
+        # Catch exceptions because game is not stable
+        # Shouldnt happen too often, just reset and go again.
+
+        try:
+            obs, reward, done = self.JsEnv.step(action)
+        except:
+            with open(log_dir + "/err_log.txt", "a") as f:
+                traceback.print_exc(file=f)
+            obs, reward, done = (self.JsEnv.get_pure_obs(), 0, True)
+
+        #print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
         info = {}
         self.r += reward
         self.l += 30

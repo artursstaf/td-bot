@@ -36,7 +36,8 @@ class JsTdWrap(object):
             with open(prefix + script, 'r') as f:
                 self.eng.eval(f.read())
 
-        self.eng.eval("render = false")
+        self.eng.eval("render = false;")
+        self.eng.eval("godMode = false;")
 
     def reset(self):
         """resets game returns observation"""
@@ -53,3 +54,7 @@ class JsTdWrap(object):
     def random_action(self):
         assert self.initialized, "Environment must be initialized before generating random action"
         return self.eng.call("randomAction", [])
+
+    def get_pure_obs(self):
+        assert self.initialized, "Environment must be initialized before generating random action"
+        return self.eng.call("getObservation", [])

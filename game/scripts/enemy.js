@@ -14,7 +14,7 @@ class Enemy {
         // Position
         this.pos = window.createVector(x, y);
         this.vel = window.createVector(0, 0);
-        
+
         // Stats
         this.cash = 0;
         this.damage = 1;
@@ -63,7 +63,7 @@ class Enemy {
     drawHealth() {
         var percent = 1 - this.health / this.maxHealth;
         if (percent === 0) return;
-        
+
         push();
         translate(this.pos.x, this.pos.y);
 
@@ -111,7 +111,8 @@ class Enemy {
         }
     }
 
-    onTick() {}
+    onTick() {
+    }
 
     // Return speed in pixels per tick
     // Adjusted to not be affected by zoom level
@@ -128,6 +129,7 @@ class Enemy {
             if (dir === null) return;
             // Adjust velocity
             var speed = this.pxSpeed();
+            // 1 pa kreisi, 2 uz augsu, 3 palabi, 4 uz leju
             if (dir === 1) this.vel = window.createVector(-speed, 0);
             if (dir === 2) this.vel = window.createVector(0, -speed);
             if (dir === 3) this.vel = window.createVector(speed, 0);
@@ -143,7 +145,7 @@ class Enemy {
 
             if (e.isDead()) this.effects.splice(i, 1);
         }
-        
+
         // Movement
         this.vel.limit(96 / ts);
         this.vel.limit(this.pxSpeed());

@@ -1,14 +1,14 @@
 // Provides interface for agent to interact with environment
 let ticksPerActions = 30;
 let recordedEnemiesCount = 100;
-width = 504;
-height = 480;
+width = 528;
+height = 528;
 
-function envReset(){
+function envReset() {
     return env.reset();
 }
 
-function envStep(actions){
+function envStep(actions) {
     return env.step(actions);
 }
 
@@ -47,7 +47,13 @@ env = {
         // Ignore cash loss from buying towers
         let cashGained = Math.max(cash - prev_cash, 0);
         env.total_cash_acquired += cashGained;
-        return getState(died);
+        let state = getState(died);
+
+        if(died){
+            env.reset();
+        }
+
+        return state;
     }
 };
 
@@ -74,20 +80,20 @@ function applyActions(actions) {
             break;
         case 1: // Buy
             toPlace = true;
-            if(canPlace(x, y)){
+            if (canPlace(x, y)) {
                 buy(createTower(x, y, tower[tower.idToName[towerType]]))
             }
             break;
         case 2: // Upgrade
             var t = getTower(x, y);
-            if(t && t.upgrades.length > 0){
+            if (t && t.upgrades.length > 0) {
                 selected = t;
                 upgrade(t.upgrades[0]);
             }
             break;
         case 3: // Sell
             var t = getTower(x, y);
-            if(t){
+            if (t) {
                 sell(t);
             }
         default:
@@ -107,43 +113,40 @@ function getReward(isDone) {
 }
 
 function getScore() {
-    return Math.max(wave, 1) + 0.3 * health + 0.055 * env.total_cash_acquired;
+    return 2 * Math.max(wave, 1) + 0.3 * health + 0.15 * env.total_cash_acquired + (towers.length > 0 ? 1 : 0);
 }
 
 function getObservation() {
-    let map = [...grid];
+    let map = new Array(grid.length);
 
-    spawnpoints.forEach((s) => {
-        map[s.x][s.y] = 15;
-    });
+    for (let i = 0; i < grid.length; i++)
+        map[i] = grid[i].slice(0);
 
-    tempSpawns.forEach((s) => {
-        try{
-            map[s.x][s.y] = 16;
-        }catch (e) {
-            console.log(s);
-            console.log(map);
-            throw e;
-        }
-    });
+    for (let i = 0; i < spawnpoints.length; i++) {
+        let s = spawnpoints[i];
+        map[s.x][s.y] = 16;
+    }
 
+    for (let i = 0; i < tempSpawns.length; i++) {
+        let s = tempSpawns[i][0];
+        map[s.x][s.y] = 17;
+    }
 
     // Exit location
-    map[exit.x][exit.y] = 17;
+    map[exit.x][exit.y] = 18;
 
-    towers.forEach((t) => {
-        map[t.gridPos.x][t.gridPos.y] = t.id;
-    });
+    for (let i = 0; i < towers.length; i++) {
+        let t = towers[i];
+        map[t.gridPos.x][t.gridPos.y] = t.id + 1;
+    }
 
-    // array of 700 enemies with their absolute position and type
     let alive_enemies_type_and_pos = buildArray(1, recordedEnemiesCount, [0, 0, 0])[0];
 
-    enemies.forEach((e, i) => {
+    for (let i = 0; i < Math.min(enemies.length, alive_enemies_type_and_pos.length); i++) {
+        let e = enemies[i];
         let grid_position = gridPos(e.pos.x, e.pos.y);
-        if(i < alive_enemies_type_and_pos.length){
-            alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
-        }
-    });
+        alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
+    }
 
     return [map, wave, health, cash, alive_enemies_type_and_pos];
 }
