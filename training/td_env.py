@@ -67,6 +67,7 @@ class TdEnv(gym.Env):
         self.r += reward
         self.l += 30
         if done:
+            print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1
             info['episode'] = {'r': self.r, 'l': self.l}
             self.r = 0
@@ -79,6 +80,9 @@ class TdObsSpace:
     def __init__(self):
         self.dtype = np.dtype(np.float32)
         self.shape = (obs_shape,)
+
+    def __eq__(self, other):
+        return self.dtype == other.dtype and self.shape == other.shape
 
 
 # %%

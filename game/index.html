@@ -72,7 +72,8 @@
             </div>
         </aside>
         <aside id="model">
-          <button id="train_button" onClick="train()">Train</button>
+            <button id="train_button" onClick="train()">Load model</button>
+            <input type="checkbox" name="bot_play" value="bot">Bot actions</input>
         </aside>
         <aside id="info">
             <div id="info-div">
@@ -94,6 +95,18 @@
             </div>
         </aside>
     </div>
+    <script>
+        var checkbox = document.querySelector("input[name=bot_play]");
+        checkbox.addEventListener('change', function () {
+            env.reset();
+            window.loop();
+            if (this.checked) {
+                bot_play = true;
+            } else {
+                bot_play = false;
+            }
+        });
+    </script>
 </main>
 <footer>
     <p id="copyright">&copy; 2018, xithiox</p>

@@ -270,7 +270,7 @@ function isWave(min, max) {
 // Load map from template
 // Always have an exit and spawnpoints if you do not have a premade grid
 function loadMap() {
-    const name = 'dense3';
+    const name = 'dense2';
 
     health = 40;
     cash = 55;
@@ -441,8 +441,11 @@ function randomTile() {
 function randomWave() {
     const waves = [];
 
-    if (isWave(0, 3)) {
-        waves.push([40, ['weak', 50]]);
+    if (isWave(0, 1)) {
+        waves.push([70, ['weak', 50]]);
+    }
+    if (isWave(1, 3)) {
+        waves.push([60, ['weak', 50]]);
     }
     if (isWave(2, 4)) {
         waves.push([20, ['weak', 25]]);
@@ -688,13 +691,13 @@ function updateInfo(t) {
 
 // Update pause button
 function updatePause() {
-    if(!render) return;
+    if (!render) return;
     document.getElementById('pause').innerHTML = paused ? 'Start' : 'Pause';
 }
 
 // Update samples status display with wave, health, and cash
 function updateStatus() {
-    if(!render) return;
+    if (!render) return;
     document.getElementById('wave').innerHTML = 'Wave ' + wave;
     document.getElementById('health').innerHTML = 'Health: ' +
         health + '/' + maxHealth;
@@ -738,7 +741,33 @@ function setup() {
 
 }
 
+let verboseActions = {
+    0: "Do nothing",
+    1: "Place Tower",
+    2: "Upgrade",
+    3: "Sell"
+};
+
 function draw() {
+    // Apply actions after first frame
+    if (bot_play && ticks % ticksPerActions === 1) {
+        let done = health <= 0 || wave >= 37;
+        let obs = null;
+        if (done) {
+            console.log("Resetting remote env");
+            remoteResetModel();
+            obs = env.reset();
+            window.loop();
+        } else {
+            obs = getObservation();
+        }
+        done = health <= 0 || wave >= 37;
+
+        let actions = remoteGetActions(obs, done)["action"][0];
+        console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}]`);
+        applyActions(actions)
+    }
+
     background(bg);
 
     // Update samples status
@@ -973,13 +1002,9 @@ function draw() {
         toPathfind = false;
     }
 
-/*    if (ticks % ticksPerActions === 1) {
-        applyActions(randomAction())
-    }
-
-    if (!paused) {
+    if (bot_play && !paused) {
         ticks++;
-    }*/
+    }
 
     return false;
 }

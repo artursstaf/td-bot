@@ -209,11 +209,11 @@ function outsideRect(x, y, cx, cy, w, h) {
 }
 
 function polygon(x, y, radius, npoints) {
-    var angle = TWO_PI / npoints;
+    var angle = window.TWO_PI / npoints;
     beginShape();
-    for (var a = 0; a < TWO_PI; a += angle) {
-        var sx = x + cos(a) * radius;
-        var sy = y + sin(a) * radius;
+    for (var a = 0; a < window.TWO_PI; a += angle) {
+        var sx = x + window.cos(a) * radius;
+        var sy = y + window.sin(a) * radius;
         vertex(sx, sy);
     }
     endShape(CLOSE);

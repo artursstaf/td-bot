@@ -34,7 +34,7 @@ class Particle {
 class Fire extends Particle {
     constructor(pos, speed) {
         super(pos, speed);
-        this.angle = window.random(TWO_PI);
+        this.angle = window.random(window.TWO_PI);
         this.angVel = window.random(-1, 1);
         this.decay = window.random(3, 6);
         this.color = [200 + window.random(55), window.random(127), window.random(31)];

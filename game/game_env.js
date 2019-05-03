@@ -16,6 +16,7 @@ env = {
     reset: function () {
         // Stop .p5 game loop
         window.noLoop();
+        ticks = 0;
         resetGame(false);
         if (render) {
             draw();
@@ -59,7 +60,7 @@ env = {
 
 // Return Observation, Reward, Done tuple
 function getState(isDone) {
-    return [getObservation(), getReward(isDone), isDone];
+    return [getObservation(), getReward(isDone), isDone || wave >= 37];
 }
 
 function randomAction() {

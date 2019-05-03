@@ -489,12 +489,12 @@ tower.bomb = {
                     systems.push(s);
                 }
                 var segs = 3;
-                var a0 = window.random(0, TWO_PI);
+                var a0 = window.random(0, window.TWO_PI);
                 for (var i = 0; i < segs; i++) {
-                    var a = TWO_PI / segs * i + a0;
+                    var a = window.TWO_PI / segs * i + a0;
                     var d = 2 * ts;
-                    var x = e.pos.x + cos(a) * d;
-                    var y = e.pos.y + sin(a) * d;
+                    var x = e.pos.x + window.cos(a) * d;
+                    var y = e.pos.y + window.sin(a) * d;
                     var inRadius = getInRange(x, y, blastRadius, enemies);
                     if (showEffects) {
                         var s = new BombExplosion(x, y);

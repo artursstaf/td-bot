@@ -19,14 +19,13 @@ def load_from_and_train(filename):
     env.reset()
     env = DummyVecEnv([lambda: env])
     model = PPO2.load(model_dir + filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=256)
-    model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
+    model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 
 def example_run(filename):
     env = TdEnv()
-    env.reset()
     env = DummyVecEnv([lambda: env])
-
+    obs = env.reset()
     model = PPO2.load(model_dir + filename)
 
     state = None
@@ -35,9 +34,11 @@ def example_run(filename):
     for _ in range(1000000):
         action, state = model.predict(obs, state=state, mask=done)
         obs, reward, done, _ = env.step(action)
+        print(action)
         if done:
             break
 
 
 if __name__ == "__main__":
-    fresh_learn()
+    example_run("PPO2_steps_10799.pkl")
+
