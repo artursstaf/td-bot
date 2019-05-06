@@ -50,7 +50,7 @@ class TdPolicy(ActorCriticPolicy):
             # Embeddings for grid - tile,tower,block types
             tile_type_embeddings = tf.get_variable("tile_embeddings", [19, 5])
             embedded_tiles = tf.layers.flatten(tf.nn.embedding_lookup(tile_type_embeddings, tf.cast(grid, tf.int32)))
-            grid = act_fun(linear(embedded_tiles, "embedding_tiles_fc1", 128, init_scale=np.sqrt(2)))
+            grid = act_fun(linear(embedded_tiles, "embedding_tiles_fc1", 256, init_scale=np.sqrt(2)))
 
             # Embeddings for unit types in map
             enemies_type = enemies[:, :, 2:3]
@@ -62,8 +62,8 @@ class TdPolicy(ActorCriticPolicy):
 
             # concatenate back enemies to shape (batch, enemies, features)
             enemies = tf.concat((enemies_coordinates, embedded_enemies), axis=-1)
-            enemies = dense(enemies, 16, activation=tf.nn.relu)
-            enemies = dense(enemies, 16, activation=tf.nn.relu)
+            enemies = dense(enemies, 32, activation=tf.nn.relu)
+            enemies = dense(enemies, 32, activation=tf.nn.relu)
             # Max pool to select most important enemies
             enemies = max_pooling1d(enemies, 15, 10)
             enemies = tf.layers.flatten(enemies)
@@ -80,7 +80,7 @@ class TdPolicy(ActorCriticPolicy):
 
             # Build the non-shared part of policy and value network
             latent_policy = act_fun(linear(latent, "pi_fc1", 256, init_scale=np.sqrt(2)))
-            latent_value = act_fun(linear(latent, "vf_fc1", 32, init_scale=np.sqrt(2)))
+            latent_value = act_fun(linear(latent, "vf_fc1", 64, init_scale=np.sqrt(2)))
 
             self.value_fn = linear(latent_value, 'vf', 1)
             self.proba_distribution, self.policy, self.q_value = \

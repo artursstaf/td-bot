@@ -62,10 +62,10 @@ class TdEnv(gym.Env):
                 traceback.print_exc(file=f)
             obs, reward, done = (self.JsEnv.get_pure_obs(), 0, True)
 
-        #print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
+        # print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
         info = {}
         self.r += reward
-        self.l += 30
+        self.l += 60
         if done:
             print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1

@@ -1,5 +1,5 @@
 // Provides interface for agent to interact with environment
-let ticksPerActions = 30;
+let ticksPerActions = 60;
 let recordedEnemiesCount = 100;
 width = 528;
 height = 528;

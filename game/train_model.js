@@ -7,7 +7,7 @@ async function train() {
     console.log(remoteGetActions(getObservation(), false)["action"]);
 }
 
-let url = "http://localhost:8000/";
+let url = "http://81.198.203.36:8000/";
 
 function remoteResetModel() {
     console.log(Get(url + "reset_model"));
