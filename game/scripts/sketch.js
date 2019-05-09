@@ -636,8 +636,8 @@ function resetGame(pause_game = true) {
 
 // Resizes cols, rows, and canvas based on tile size
 function resizeMax() {
-    cols = 22;
-    rows = 22;
+    cols = 20;
+    rows = 20;
     if (render) {
         resizeCanvas(cols * ts, rows * ts, true);
     }
@@ -763,7 +763,7 @@ function draw() {
         }
         done = health <= 0 || wave >= 37;
 
-        let actions = remoteGetActions(obs, done)["action"][0];
+        let actions = remoteGetActions(obs, done)["action"];
         console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}]`);
         applyActions(actions)
     }

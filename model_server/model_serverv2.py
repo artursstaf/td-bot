@@ -33,8 +33,8 @@ def reset_model():
 
 
 def predict(observation, done):
-    global model, state
+    global model#, state
     observation = _preprocess_observation(observation)
 
-    action, state = model.predict([observation], state=state, mask=[done])
+    action, state = model.predict(observation)
     return action.tolist()

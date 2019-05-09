@@ -1,29 +1,31 @@
 import glob
 import os
 
-import gym
 from stable_baselines import PPO2
 from stable_baselines.common import set_global_seeds
 from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 from training.td_callback import log_dir, td_callback_fn, model_dir
 from training.td_env import TdEnv
-from training.td_policy import TdPolicy
+from training.td_policy_2 import TdPolicy2
 
 
 def fresh_learn():
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(12)])
-    model = PPO2(TdPolicy, env, verbose=1, nminibatches=4, tensorboard_log=log_dir, n_steps=128)
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
+    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=4, tensorboard_log=log_dir, n_steps=2048, gamma=0.999,
+                 learning_rate=3e-4)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
 
 def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
-    env = DummyVecEnv([lambda: env])
-    model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=128)
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
+    model = PPO2.load(filename, env=env, verbose=1, nminibatches=12, tensorboard_log=log_dir, n_steps=512,
+                      gamma=0.98812,
+                      learning_rate=3e-4)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 
@@ -35,8 +37,8 @@ def example_run(filename):
 
     state = None
     done = [False]
-    SubprocVecEnv
-    for _ in range(1000000):
+    SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
+    for _ in range(1000):
         action, state = model.predict(obs, state=state, mask=done)
         obs, reward, done, _ = env.step(action)
         print(action)
@@ -58,5 +60,7 @@ def latest_file(directory):
 
 
 if __name__ == "__main__":
-    # load_from_and_train(latest_file(model_dir))
-    fresh_learn()
+    latest = latest_file(model_dir)
+    print(f"Loading: {latest}")
+    load_from_and_train(latest_file(model_dir))
+    # fresh_learn()

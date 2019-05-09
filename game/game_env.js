@@ -1,8 +1,7 @@
 // Provides interface for agent to interact with environment
-let ticksPerActions = 60;
-let recordedEnemiesCount = 100;
-width = 528;
-height = 528;
+let ticksPerActions = 180;
+width = 480;
+height = 480;
 
 function envReset() {
     return env.reset();
@@ -50,7 +49,7 @@ env = {
         env.total_cash_acquired += cashGained;
         let state = getState(died);
 
-        if(died){
+        if (died) {
             env.reset();
         }
 
@@ -60,7 +59,7 @@ env = {
 
 // Return Observation, Reward, Done tuple
 function getState(isDone) {
-    return [getObservation(), getReward(isDone), isDone || wave >= 37];
+    return [getObservation(), getReward(isDone), isDone || wave >= 40];
 }
 
 function randomAction() {
@@ -103,18 +102,23 @@ function applyActions(actions) {
 }
 
 function getReward(isDone) {
-    if (isDone)
-        return -10.0;
+    if (isDone) {
+        if (wave === 40) {
+            return 20;
+        }
+        return 0;
+    }
     // Wave - sparse reward
     // Cash -> health -> wave
     let new_score = getScore();
     let diff = new_score - env.score;
     env.score = new_score;
+    diff = diff * (Math.pow(0.97, towers.length));
     return diff;
 }
 
 function getScore() {
-    return 2 * Math.max(wave, 1) + 0.3 * health + 0.15 * env.total_cash_acquired + (towers.length > 0 ? 1 : 0);
+    return Math.max(wave, 1);
 }
 
 function getObservation() {
@@ -141,14 +145,11 @@ function getObservation() {
         map[t.gridPos.x][t.gridPos.y] = t.id + 1;
     }
 
-    let alive_enemies_type_and_pos = buildArray(1, recordedEnemiesCount, [0, 0, 0])[0];
+    let exit_loc = [exit.x, exit.y];
+    let s0 = spawnpoints[0];
+    let s1 = spawnpoints[1];
 
-    for (let i = 0; i < Math.min(enemies.length, alive_enemies_type_and_pos.length); i++) {
-        let e = enemies[i];
-        let grid_position = gridPos(e.pos.x, e.pos.y);
-        alive_enemies_type_and_pos[i] = [grid_position.x, grid_position.y, e.id];
-    }
-
-    return [map, wave, health, cash, alive_enemies_type_and_pos];
+    let spawns = [s0.x, s0.y, s1.x, s1.y];
+    return [map, wave, health, cash, exit_loc, spawns];
 }
 

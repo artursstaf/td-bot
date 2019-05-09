@@ -8,25 +8,32 @@ import numpy as np
 from training.env_wrapper import JsTdWrap
 from training.td_callback import log_dir
 
-cols = 22
-rows = 22
-rec_enemies = 100
-obs_shape = cols * rows + 1 + 1 + 1 + 3 * rec_enemies
+cols = 20
+rows = 20
+obs_shape = cols * rows + 1 + 1 + 1 + 2 + 4 + 1
+step_ticks = 180
 
 
 def _preprocess_observation(obs):
-    grid, wave, health, cash, alive_enemies = obs
+    grid, wave, health, cash, ehit, spawns = obs
 
     grid = np.reshape(np.array(grid, dtype='float32'), cols * rows)
-    wave = np.array([wave], dtype='float32') / 36
-    health = np.array([health], dtype='float32') / 40.0
-    cash = np.array([cash], dtype='float32') / 65.0 * 2
-    alive_enemies = np.array(alive_enemies, dtype='float32')
-    alive_enemies[:, 0:1] /= cols
-    alive_enemies[:, 1:2] /= rows
-    alive_enemies = np.reshape(alive_enemies, 3 * rec_enemies)
+    wave = (np.array([wave], dtype='float32') - 20) / 40.0
+    health = (np.array([health], dtype='float32') - 20) / 40.0
+    orig_cash = np.array([cash], dtype='float32')
+    with np.errstate(divide='ignore'):
+        cash = np.log(np.array([cash], dtype='float32'))
+    cash[np.isneginf(cash)] = 0
+    ehit = np.array(ehit, dtype='float32')
+    ehit[0] /= cols
+    ehit[1] /= rows
+    spawns = np.array(spawns, dtype='float32')
+    spawns[0] /= cols
+    spawns[1] /= rows
+    spawns[2] /= cols
+    spawns[3] /= rows
 
-    return np.concatenate((grid, wave, health, cash, alive_enemies), axis=0)
+    return np.concatenate((grid, wave, health, cash, ehit, spawns, orig_cash), axis=0)
 
 
 class TdEnv(gym.Env):
@@ -62,12 +69,12 @@ class TdEnv(gym.Env):
                 traceback.print_exc(file=f)
             obs, reward, done = (self.JsEnv.get_pure_obs(), 0, True)
 
-        # print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
+        #print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
         info = {}
         self.r += reward
-        self.l += 60
+        self.l += step_ticks
         if done:
-            print(f"episode: {self.episode} wave_reached {obs[1]}")
+            #print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1
             info['episode'] = {'r': self.r, 'l': self.l}
             self.r = 0
