@@ -63,8 +63,10 @@ class TdEnv(gym.Env):
         # Shouldnt happen too often, just reset and go again.
 
         try:
+            #print("Stepping, stuck here??")
             obs, reward, done = self.JsEnv.step(action)
         except:
+            print("environment crash")
             with open(log_dir + "/err_log.txt", "a") as f:
                 traceback.print_exc(file=f)
             obs, reward, done = (self.JsEnv.get_pure_obs(), 0, True)
@@ -74,7 +76,7 @@ class TdEnv(gym.Env):
         self.r += reward
         self.l += step_ticks
         if done:
-            #print(f"episode: {self.episode} wave_reached {obs[1]}")
+            print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1
             info['episode'] = {'r': self.r, 'l': self.l}
             self.r = 0

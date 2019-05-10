@@ -37,6 +37,7 @@ let cash;
 let health;
 let maxHealth;
 let wave;
+let prev_wave_glob;
 
 let spawnCool;          // number of ticks between spawning enemies
 
@@ -624,6 +625,8 @@ function resetGame(pause_game = true) {
     health = 40;
     maxHealth = health;
     wave = 0;
+    prev_wave_glob = 0;
+    steps_glob = 0;
     wcd = 120;
     // Reset all flags
     paused = pause_game;
@@ -748,10 +751,13 @@ let verboseActions = {
     3: "Sell"
 };
 
+let steps_glob = 0;
 function draw() {
     // Apply actions after first frame
-    if (bot_play && ticks % ticksPerActions === 1) {
-        let done = health <= 0 || wave >= 37;
+    let action_phase = steps_glob % actionsPerWave !== 0 || steps_glob === 0;
+    if (bot_play && wave > 0 && action_phase && prev_wave_glob !== wave) {
+        steps_glob++;
+        let done = health <= 0 || wave >= 40;
         let obs = null;
         if (done) {
             console.log("Resetting remote env");
@@ -761,13 +767,17 @@ function draw() {
         } else {
             obs = getObservation();
         }
-        done = health <= 0 || wave >= 37;
+        done = health <= 0 || wave >= 40;
 
         let actions = remoteGetActions(obs, done)["action"];
         console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}]`);
-        applyActions(actions)
+        applyActions(actions);
+        return;
     }
-
+    if(prev_wave_glob !== wave){
+        steps_glob = 0;
+    }
+    prev_wave_glob = wave;
     background(bg);
 
     // Update samples status
@@ -1000,10 +1010,6 @@ function draw() {
     if (toPathfind) {
         recalculate();
         toPathfind = false;
-    }
-
-    if (bot_play && !paused) {
-        ticks++;
     }
 
     return false;

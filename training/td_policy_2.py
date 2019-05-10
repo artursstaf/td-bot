@@ -41,8 +41,10 @@ class TdPolicy2(ActorCriticPolicy):
             exit2 = latent[:, fl_gr_c + 3:fl_gr_c + 5]
             spawns = latent[:, fl_gr_c + 5:fl_gr_c + 9]
             orig_cash = latent[:, fl_gr_c + 9:fl_gr_c + 10]
+
             # walkmap iepist, savējos towerus, tips un koord 20x?
-            word_embeddings = tf.get_variable("word_embeddings", [19, 5])
+
+            word_embeddings = tf.get_variable("word_embeddings", [19, 9])
             embedded_word_ids = tf.nn.embedding_lookup(word_embeddings, tf.cast(grid, tf.int32))
             embedded_word_ids = tf.layers.flatten(embedded_word_ids)
             embedded_words_fc = act_fun(linear(embedded_word_ids, "grid_fc1", 512, init_scale=np.sqrt(2)))

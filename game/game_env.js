@@ -1,5 +1,5 @@
 // Provides interface for agent to interact with environment
-let ticksPerActions = 180;
+let actionsPerWave = 5;
 width = 480;
 height = 480;
 
@@ -15,26 +15,34 @@ env = {
     reset: function () {
         // Stop .p5 game loop
         window.noLoop();
-        ticks = 0;
         resetGame(false);
-        if (render) {
-            draw();
-        } else {
-            tickWithoutRender();
-        }
 
-        this.total_cash_acquired = cash;
-        this.score = getScore();
+        while (wave < 1) {
+            if (render) {
+                draw();
+            } else {
+                tickWithoutRender();
+            }
+        }
+        env.health_lost = 0;
+        env.steps = 0;
+        env.total_cash_acquired = cash;
+        env.score = getScore();
 
         return getObservation();
     },
     step: function (actions) {
         applyActions(actions);
 
-        let prev_cash = cash;
+        env.steps++;
 
+        let action_phase = this.steps % actionsPerWave !== 0;
+
+        const prev_cash = cash;
+        const prev_wave = wave;
+        const prev_health = health;
         let died = false;
-        for (let i = 0; i < ticksPerActions; i++) {
+        while (prev_wave === wave && !action_phase) {
             if (render) {
                 died = draw();
             } else {
@@ -46,6 +54,7 @@ env = {
         // Ignore cash loss from buying towers
         let cashGained = Math.max(cash - prev_cash, 0);
         env.total_cash_acquired += cashGained;
+        env.health_lost = prev_health - health;
         let state = getState(died);
 
         if (died) {
@@ -103,22 +112,28 @@ function applyActions(actions) {
 function getReward(isDone) {
     if (isDone) {
         if (wave === 40) {
-            return 20;
+            return;
         }
         return 0;
     }
     // Wave - sparse reward
     // Cash -> health -> wave
     let new_score = getScore();
-    let diff = new_score - env.score;
+    let reward = new_score - env.score;
     env.score = new_score;
-    diff = diff * (Math.pow(0.97, towers.length));
-    return diff;
+
+    // Penalty for losing health after wave passed;
+    if (env.health_lost !== 0) {
+        reward = reward * (env.health_lost / 40.0);
+    }
+
+    // Time scale earlier rewards are more valuable
+    reward = reward * (Math.pow(0.6, wave / 10.0));
+    return reward;
 }
 
 function getScore() {
-    let base = Math.max(wave, 1);
-    return Math.max(wave, 1) ;
+    return 2 * wave;
 }
 
 function getObservation() {

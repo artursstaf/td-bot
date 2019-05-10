@@ -97,13 +97,13 @@
     <script>
         var checkbox = document.querySelector("input[name=bot_play]");
         checkbox.addEventListener('change', function () {
-            env.reset();
-            window.loop();
             if (this.checked) {
                 bot_play = true;
             } else {
                 bot_play = false;
             }
+            env.reset();
+            window.loop();
         });
     </script>
 </main>
