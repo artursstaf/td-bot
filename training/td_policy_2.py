@@ -38,19 +38,27 @@ class TdPolicy2(ActorCriticPolicy):
             wave = latent[:, fl_gr_c:fl_gr_c + 1]
             health = latent[:, fl_gr_c + 1:fl_gr_c + 2]
             cash = latent[:, fl_gr_c + 2:fl_gr_c + 3]
-            ehit = latent[:, fl_gr_c + 3:fl_gr_c + 5]
+            exit2 = latent[:, fl_gr_c + 3:fl_gr_c + 5]
             spawns = latent[:, fl_gr_c + 5:fl_gr_c + 9]
             orig_cash = latent[:, fl_gr_c + 9:fl_gr_c + 10]
+            # walkmap iepist, savējos towerus, tips un koord 20x?
+            word_embeddings = tf.get_variable("word_embeddings", [19, 5])
+            embedded_word_ids = tf.nn.embedding_lookup(word_embeddings, tf.cast(grid, tf.int32))
+            embedded_word_ids = tf.layers.flatten(embedded_word_ids)
+            embedded_words_fc = act_fun(linear(embedded_word_ids, "grid_fc1", 512, init_scale=np.sqrt(2)))
+            embedded_words_fc = act_fun(linear(embedded_words_fc, "grid_fc2", 512, init_scale=np.sqrt(2)))
 
-            one_hot_grid = tf.layers.flatten(tf.one_hot(tf.cast(grid, tf.int32), 19, axis=-1))
-            grid = act_fun(linear(one_hot_grid, "embedding_tiles_fc1", 1024, init_scale=np.sqrt(2)))
+            encode_misc = tf.concat((wave, health, cash, exit2, spawns, orig_cash), axis=-1)
+            encode_misc = act_fun(linear(encode_misc, "misc_fc1", 256, init_scale=np.sqrt(2)))
+            encode_misc = act_fun(linear(encode_misc, "misc_fc2", 256, init_scale=np.sqrt(2)))
 
-            latent = tf.concat((grid, wave, health, cash, ehit, spawns, orig_cash), axis=-1)
-            latent = act_fun(linear(latent, "shared_fc1", 1024, init_scale=np.sqrt(2)))
+            latent = tf.concat((embedded_words_fc, encode_misc), axis=-1)
+            latent = act_fun(linear(latent, "shared_fc1", 512, init_scale=np.sqrt(2)))
             # Build the non-shared part of policy and value network
-            latent_policy = act_fun(linear(latent, "pi_fc1", 1024, init_scale=np.sqrt(2)))
-            latent_policy = act_fun(linear(latent_policy, "pi_fc2", 1024, init_scale=np.sqrt(2)))
-            latent_value = act_fun(linear(latent, "vf_fc2", 516, init_scale=np.sqrt(2)))
+            latent_policy = act_fun(linear(latent, "pi_fc1", 512, init_scale=np.sqrt(2)))
+            latent_policy = act_fun(linear(latent_policy, "pi_fc2", 512, init_scale=np.sqrt(2)))
+            latent_value = act_fun(linear(latent, "vf_fc1", 256, init_scale=np.sqrt(2)))
+            latent_value = act_fun(linear(latent_value, "vf_fc2", 256, init_scale=np.sqrt(2)))
 
             self.value_fn = linear(latent_value, 'vf', 1)
             self.proba_distribution, self.policy, self.q_value = \

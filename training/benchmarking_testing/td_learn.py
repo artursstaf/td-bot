@@ -16,8 +16,7 @@ def fresh_learn():
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
-    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=12, tensorboard_log=log_dir, n_steps=256, gamma=0.98812,
-                 learning_rate=3e-4)
+    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=128, gamma=0.98812)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
 
