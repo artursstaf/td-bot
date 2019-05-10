@@ -28,10 +28,9 @@ class TdPolicy(ActorCriticPolicy):
 
         super(TdPolicy, self).__init__(sess, ob_space, ac_space, n_env, n_steps, n_batch, scale=True, obs_phs=obs_phs)
 
-        n_lstm = 128
-        big_dense = 128
-        small_dense = 32
-        small_small_dense = 16
+        n_lstm = 512
+        big_dense = 512
+        small_dense = 256
         act_fun = tf.nn.relu
 
         with tf.variable_scope("input", reuse=True):
@@ -48,27 +47,9 @@ class TdPolicy(ActorCriticPolicy):
             wave = latent[:, fl_gr_c:fl_gr_c + 1]
             health = latent[:, fl_gr_c + 1:fl_gr_c + 2]
             cash = latent[:, fl_gr_c + 2:fl_gr_c + 3]
-            #enemies = latent[:, fl_gr_c + 3:]
-            #enemies = tf.reshape(enemies, [tf.shape(enemies)[0], rec_enemies, 3])
 
             one_hot_grid = tf.layers.flatten(tf.one_hot(tf.cast(grid, tf.int32), 19, axis=-1))
             grid = act_fun(linear(one_hot_grid, "embedding_tiles_fc1", big_dense, init_scale=np.sqrt(2)))
-
-            # Embeddings for unit types in map
-            #enemies_type = enemies[:, :, 2:3]
-            #enemies_coordinates = enemies[:, :, 0:2]
-
-            #enemies_type_embeddings = tf.get_variable("enemy_embeddings", [11, 6])
-            #embedded_enemies = tf.nn.embedding_lookup(enemies_type_embeddings, tf.cast(enemies_type, tf.int32))
-            #embedded_enemies = tf.squeeze(embedded_enemies, [2])
-
-            # concatenate back enemies to shape (batch, enemies, features)
-            #enemies = tf.concat((enemies_coordinates, embedded_enemies), axis=-1)
-            #enemies = dense(enemies, small_small_dense, activation=tf.nn.relu)
-            #enemies = dense(enemies, small_small_dense, activation=tf.nn.relu)
-            # Max pool to select most important enemies
-            #enemies = max_pooling1d(enemies, 15, 10)
-            #enemies = tf.layers.flatten(enemies)
 
             latent = tf.concat((grid, wave, health, cash), axis=-1)
             latent = act_fun(linear(latent, "shared_fc1", big_dense, init_scale=np.sqrt(2)))
@@ -77,14 +58,12 @@ class TdPolicy(ActorCriticPolicy):
             input_sequence = batch_to_seq(latent, self.n_env, n_steps)
             masks = batch_to_seq(self.masks_ph, self.n_env, n_steps)
             rnn_output, self.snew = lstm(input_sequence, masks, self.states_ph, 'lstm_layer', n_hidden=n_lstm,
-                                         layer_norm=False)
+                                         layer_norm=True)
             latent = seq_to_batch(rnn_output)
 
             # Build the non-shared part of policy and value network
             latent_policy = act_fun(linear(latent, "pi_fc1", big_dense, init_scale=np.sqrt(2)))
-            latent_policy = act_fun(linear(latent_policy, "pi_fc2", big_dense, init_scale=np.sqrt(2)))
             latent_value = act_fun(linear(latent, "vf_fc1", small_dense, init_scale=np.sqrt(2)))
-            latent_value = act_fun(linear(latent_value, "vf_fc2", small_dense, init_scale=np.sqrt(2)))
 
             self.value_fn = linear(latent_value, 'vf', 1)
             self.proba_distribution, self.policy, self.q_value = \

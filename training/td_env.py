@@ -74,7 +74,7 @@ class TdEnv(gym.Env):
         self.r += reward
         self.l += step_ticks
         if done:
-            #print(f"episode: {self.episode} wave_reached {obs[1]}")
+            print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1
             info['episode'] = {'r': self.r, 'l': self.l}
             self.r = 0

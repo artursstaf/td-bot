@@ -7,14 +7,16 @@ from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 
 from training.td_callback import log_dir, td_callback_fn, model_dir
 from training.td_env import TdEnv
+from training.td_policy import TdPolicy
 from training.td_policy_2 import TdPolicy2
+from training.td_policy_3 import TdPolicy3
 
 
 def fresh_learn():
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
-    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=4, tensorboard_log=log_dir, n_steps=2048, gamma=0.999,
+    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=12, tensorboard_log=log_dir, n_steps=256, gamma=0.98812,
                  learning_rate=3e-4)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
@@ -23,7 +25,7 @@ def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
-    model = PPO2.load(filename, env=env, verbose=1, nminibatches=12, tensorboard_log=log_dir, n_steps=512,
+    model = PPO2.load(filename, env=env, verbose=1, nminibatches=12, tensorboard_log=log_dir, n_steps=256,
                       gamma=0.98812,
                       learning_rate=3e-4)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
@@ -60,7 +62,7 @@ def latest_file(directory):
 
 
 if __name__ == "__main__":
-    latest = latest_file(model_dir)
-    print(f"Loading: {latest}")
-    load_from_and_train(latest_file(model_dir))
-    # fresh_learn()
+    #latest = latest_file(model_dir)
+    #print(f"Loading: {latest}")
+    #load_from_and_train(latest_file(model_dir))
+    fresh_learn()

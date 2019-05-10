@@ -118,7 +118,8 @@ function getReward(isDone) {
 }
 
 function getScore() {
-    return Math.max(wave, 1);
+    let base = Math.max(wave, 1);
+    return Math.max(wave, 1) ;
 }
 
 function getObservation() {
