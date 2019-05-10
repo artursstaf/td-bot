@@ -33,7 +33,6 @@ env = {
 
         let prev_cash = cash;
 
-        // TODO determine ticks per action
         let died = false;
         for (let i = 0; i < ticksPerActions; i++) {
             if (render) {
