@@ -100,7 +100,7 @@ function addWave(pattern) {
     }
 }
 
-// Buy and place a tower if player has enough money
+// Buy and place a tower if player has enough moneyd
 function buy(t) {
     if (godMode || cash >= t.cost) {
         if (!godMode) {
@@ -111,7 +111,9 @@ function buy(t) {
         if (grid[t.gridPos.x][t.gridPos.y] === 0) toPathfind = true;
         updateInfo(t);
         newTowers.push(t);
+        return true;
     }
+    return false;
 }
 
 // Calculate and display current and average FPS
@@ -772,6 +774,7 @@ function draw() {
         let actions = remoteGetActions(obs, done)["action"];
         console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}]`);
         applyActions(actions);
+        tickWithoutRender();
         return;
     }
     if(prev_wave_glob !== wave){

@@ -10,30 +10,33 @@ from training.td_callback import log_dir
 
 cols = 20
 rows = 20
-obs_shape = cols * rows + 1 + 1 + 1 + 2 + 4 + 1
-step_ticks = 180
+num_tows = 20
+obs_shape = cols * rows + 1 + 1 + 1 + 1 + 2 + 4 + num_tows * 3
 
 
 def _preprocess_observation(obs):
-    grid, wave, health, cash, ehit, spawns = obs
+    walk, wave, health, cash, exit_loc, spawns, tows = obs
 
-    grid = np.reshape(np.array(grid, dtype='float32'), cols * rows)
+    walk = np.reshape(np.array(walk, dtype='int32'), cols * rows)
     wave = (np.array([wave], dtype='float32') - 20) / 40.0
     health = (np.array([health], dtype='float32') - 20) / 40.0
     orig_cash = np.array([cash], dtype='float32')
     with np.errstate(divide='ignore'):
         cash = np.log(np.array([cash], dtype='float32'))
     cash[np.isneginf(cash)] = 0
-    ehit = np.array(ehit, dtype='float32')
-    ehit[0] /= cols
-    ehit[1] /= rows
+    exit_loc = np.array(exit_loc, dtype='float32')
+    exit_loc[0] /= cols
+    exit_loc[1] /= rows
     spawns = np.array(spawns, dtype='float32')
     spawns[0] /= cols
     spawns[1] /= rows
     spawns[2] /= cols
     spawns[3] /= rows
+    tows = np.array(tows, dtype='float32')
+    tows[:, 1:3] /= 20
+    tows = np.reshape(tows, num_tows * 3)
 
-    return np.concatenate((grid, wave, health, cash, ehit, spawns, orig_cash), axis=0)
+    return np.concatenate((walk, wave, health, cash, exit_loc, spawns, orig_cash, tows), axis=0)
 
 
 class TdEnv(gym.Env):
@@ -47,7 +50,7 @@ class TdEnv(gym.Env):
         self.JsEnv = JsTdWrap()
         # [[buy, upgrade, sell, nothing], [tower type],
         # [one hot X coordinate], [one hot Y coordinate]]
-        self.action_space = spaces.MultiDiscrete([4, 7, cols, rows])
+        self.action_space = spaces.MultiDiscrete([4, 7, cols, rows, num_tows])
         # Dummy space
         self.observation_space = TdObsSpace()
 
@@ -63,7 +66,7 @@ class TdEnv(gym.Env):
         # Shouldnt happen too often, just reset and go again.
 
         try:
-            #print("Stepping, stuck here??")
+            # print("Stepping, stuck here??")
             obs, reward, done = self.JsEnv.step(action)
         except:
             print("environment crash")
@@ -71,12 +74,13 @@ class TdEnv(gym.Env):
                 traceback.print_exc(file=f)
             obs, reward, done = (self.JsEnv.get_pure_obs(), 0, True)
 
-        #print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
+        # print(f"Episode:{self.episode} wave:{obs[1]} cash:{obs[3]} reward:{reward} health:{obs[2]} done:{done} action:{action}")
         info = {}
         self.r += reward
-        self.l += step_ticks
+        # Wave
+        self.l = obs[1]
         if done:
-            print(f"episode: {self.episode} wave_reached {obs[1]}")
+            # print(f"episode: {self.episode} wave_reached {obs[1]}")
             self.episode += 1
             info['episode'] = {'r': self.r, 'l': self.l}
             self.r = 0
