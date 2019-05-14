@@ -18,20 +18,14 @@ def _preprocess_observation(obs):
     walk, wave, health, cash, exit_loc, spawns, tows = obs
 
     walk = np.reshape(np.array(walk, dtype='int32'), cols * rows)
-    wave = (np.array([wave], dtype='float32') - 20) / 40.0
-    health = (np.array([health], dtype='float32') - 20) / 40.0
+    wave = (np.array([wave], dtype='float32'))
+    health = (np.array([health], dtype='float32'))
     orig_cash = np.array([cash], dtype='float32')
     with np.errstate(divide='ignore'):
         cash = np.log(np.array([cash], dtype='float32'))
     cash[np.isneginf(cash)] = 0
     exit_loc = np.array(exit_loc, dtype='float32')
-    exit_loc[0] /= cols
-    exit_loc[1] /= rows
     spawns = np.array(spawns, dtype='float32')
-    spawns[0] /= cols
-    spawns[1] /= rows
-    spawns[2] /= cols
-    spawns[3] /= rows
     tows = np.array(tows, dtype='float32')
     tows[:, 1:3] /= 20
     tows = np.reshape(tows, num_tows * 3)

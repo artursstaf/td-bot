@@ -9,11 +9,18 @@ from training.td_callback import log_dir, td_callback_fn, model_dir
 from training.td_env import TdEnv
 from training.td_policy_2 import TdPolicy2
 
+# around 33 steps before half-life
+gamm = 0.979399
+n_steps = 1024
+l_r = 3e-4
+
+
 def fresh_learn():
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
-    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=256, gamma=0.99273)
+    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm,
+                 learning_rate=l_r)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
 
@@ -21,8 +28,8 @@ def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
-    model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=256,
-                      gamma=0.99273, ent_coef=0.0, learning_rate=3e-4)
+    model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
+                      gamma=gamm, learning_rate=l_r, num_timesteps=17230580)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 
@@ -60,4 +67,4 @@ if __name__ == "__main__":
     latest = latest_file(model_dir)
     print(f"Loading: {latest}")
     load_from_and_train(latest_file(model_dir))
-    #fresh_learn()
+    # fresh_learn()

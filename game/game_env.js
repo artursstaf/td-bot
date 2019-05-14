@@ -113,10 +113,10 @@ function applyActions(actions) {
 }
 
 function getReward(isDone) {
+    if (wave === 40) {
+        return 40;
+    }
     if (isDone) {
-        if (wave === 40) {
-            return;
-        }
         return 0;
     }
     // Wave - sparse reward

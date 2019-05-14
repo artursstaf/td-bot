@@ -37,10 +37,10 @@ function countSteps() {
     let i = 0;
     render = false;
     env.reset();
-    while (wave < 40) {
+    while (wave < 50) {
         [obs, reward, done] = env.step(randomAction());
+        console.log(`Step: ${i} wave: ${wave}, enemies: ${enemies.length} reward: ${reward}, done: ${done}`);
         if(done) env.reset();
         i++;
-        console.log(`Step: ${i} wave: ${wave}, enemies: ${enemies.length}`);
     }
 }
