@@ -1,7 +1,7 @@
 import glob
 import os
 
-from stable_baselines import PPO2
+from stable_baselines import PPO2, A2C
 from stable_baselines.common import set_global_seeds
 from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 
@@ -11,26 +11,24 @@ from training.td_policy_2 import TdPolicy2
 
 # around 33 steps before half-life
 gamm = 0.979399
-n_steps = 1024
-l_r = 3e-4
+n_steps = 15
 
 
 def fresh_learn():
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
-    model = PPO2(TdPolicy2, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm,
-                 learning_rate=l_r)
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
+    model = A2C(TdPolicy2, env, verbose=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
 
 def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
     model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
-                      gamma=gamm, learning_rate=l_r, num_timesteps=17230580)
-    model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
+                      gamma=gamm)
+    model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=True)
 
 
 def example_run(filename):
