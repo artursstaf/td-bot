@@ -48,19 +48,14 @@ class TdPolicy2(ActorCriticPolicy):
             walk = tf.layers.flatten(walk)
             walk = act_fun(linear(walk, "grid_fc1", 512, init_scale=np.sqrt(2)))
             walk = act_fun(linear(walk, "grid_fc2", 512, init_scale=np.sqrt(2)))
-            walk = act_fun(linear(walk, "grid_fc3", 512, init_scale=np.sqrt(2)))
 
             # Stats
-            encode_misc = tf.concat((wave, health), axis=-1)
-            encode_misc = tf.one_hot(tf.cast(encode_misc, tf.int32), 40)
-            encode_misc = tf.layers.flatten(encode_misc)
+            encode_misc = tf.concat((wave, health, cash, orig_cash), axis=-1)
             encode_misc = act_fun(linear(encode_misc, "misc_fc1", 256, init_scale=np.sqrt(2)))
             encode_misc = act_fun(linear(encode_misc, "misc_fc2", 256, init_scale=np.sqrt(2)))
 
             # Spawn and exit
             s_and_e = tf.concat((exit2, spawns), axis=-1)
-            s_and_e = tf.one_hot(tf.cast(s_and_e, tf.int32), 20)
-            s_and_e = tf.layers.flatten(s_and_e)
             s_and_e = act_fun(linear(s_and_e, "s_and_e_fc1", 256, init_scale=np.sqrt(2)))
             s_and_e = act_fun(linear(s_and_e, "s_and_e_fc2", 256, init_scale=np.sqrt(2)))
 
@@ -77,7 +72,7 @@ class TdPolicy2(ActorCriticPolicy):
             tows = act_fun(linear(tows, "towers_fc2", 512, init_scale=np.sqrt(2)))
 
             # Concat all
-            latent = tf.concat((walk, encode_misc, tows, s_and_e, cash, orig_cash), axis=-1)
+            latent = tf.concat((walk, encode_misc, tows, s_and_e), axis=-1)
             latent = act_fun(linear(latent, "shared_fc1", 1024, init_scale=np.sqrt(2)))
 
             latent_policy = act_fun(linear(latent, "pi_fc1", 1024, init_scale=np.sqrt(2)))

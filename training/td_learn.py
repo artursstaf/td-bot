@@ -26,9 +26,9 @@ def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
-    model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
-                      gamma=gamm)
-    model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=True)
+    model = A2C.load(filename, env=env, verbose=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm,
+                     num_timesteps=14063700)
+    model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 
 def example_run(filename):
