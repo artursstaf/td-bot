@@ -33,19 +33,41 @@ class TdPolicy3(ActorCriticPolicy):
 
             # restore original data shapes
             grid = latent[:, 0:fl_gr_c]
-            grid = tf.reshape(grid, (tf.shape(grid)[0], cols, rows, 1))
             wave = latent[:, fl_gr_c:fl_gr_c + 1]
             health = latent[:, fl_gr_c + 1:fl_gr_c + 2]
             cash = latent[:, fl_gr_c + 2:fl_gr_c + 3]
-            ehit = latent[:, fl_gr_c + 3:fl_gr_c + 5]
+            exit2 = latent[:, fl_gr_c + 3:fl_gr_c + 5]
             spawns = latent[:, fl_gr_c + 5:fl_gr_c + 9]
             orig_cash = latent[:, fl_gr_c + 9:fl_gr_c + 10]
+            tows = latent[:, fl_gr_c + 10:]
 
-            grid = nature_cnn(grid, pad="SAME")
-            latent = tf.concat((grid, wave, health, cash, ehit, spawns, orig_cash), axis=-1)
-            latent = act_fun(linear(latent, "shared_fc1", 512, init_scale=np.sqrt(2)))
+            # Grid CNN
+            grid = tf.reshape(grid, [tf.shape(grid)[0], cols, rows, 1])
+            grid = nature_cnn(grid)
+
+            # Non spatial
+            non_spatial = tf.concat((wave, health, cash, exit2, spawns), axis=-1)
+            non_spatial = tf.nn.tanh(linear(non_spatial, "non_spatial_fc1", 256, init_scale=np.sqrt(2)))
+
+            # towers
+            tows = tf.reshape(tows, [tf.shape(tows)[0], 20, 3])
+            tower_ids = tows[:, :, 0]
+            rest = tows[:, :, 1:3]
+            tower_embeddings_descr = tf.get_variable("tower_embeddings", [14, 3])
+            tower_embeddings = tf.nn.embedding_lookup(tower_embeddings_descr, tf.cast(tower_ids, tf.int32))
+            tows = tf.concat((tower_embeddings, rest), axis=-1)
+            tows = tf.layers.dense(tows, 16, activation=tf.nn.relu, name="towers_fc1")
+            tows = tf.layers.max_pooling1d(tows, 5, 2)
+            tows = tf.layers.flatten(tows)
+            tows = act_fun(linear(tows, "towers_fc2", 256, init_scale=np.sqrt(2)))
+
+            # combine
+            latent = tf.concat((grid, non_spatial, tows), axis=-1)
+            latent = act_fun(linear(latent, "shared_fc1", 256, init_scale=np.sqrt(2)))
+            latent = act_fun(linear(latent, "shared_fc2", 256, init_scale=np.sqrt(2)))
+
             # Build the non-shared part of policy and value network
-            latent_policy = act_fun(linear(latent, "pi_fc1", 512, init_scale=np.sqrt(2)))
+            latent_policy = act_fun(linear(latent, "pi_fc1", 256, init_scale=np.sqrt(2)))
             latent_value = act_fun(linear(latent, "vf_fc1", 256, init_scale=np.sqrt(2)))
 
             self.value_fn = linear(latent_value, 'vf', 1)

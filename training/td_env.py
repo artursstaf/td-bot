@@ -15,9 +15,10 @@ obs_shape = cols * rows + 1 + 1 + 1 + 1 + 2 + 4 + num_tows * 3
 
 
 def _preprocess_observation(obs):
-    walk, wave, health, cash, exit_loc, spawns, tows = obs
+    grid, wave, health, cash, exit_loc, spawns, tows = obs
 
-    walk = np.reshape(np.array(walk, dtype='int32'), cols * rows)
+    grid = np.reshape(np.array(grid, dtype='float32'), cols * rows)
+    grid /= 18
     wave = (np.array([wave], dtype='float32') - 20) / 40.0
     health = (np.array([health], dtype='float32') - 20) / 40.0
     orig_cash = np.array([cash], dtype='float32')
@@ -36,7 +37,7 @@ def _preprocess_observation(obs):
     tows[:, 1:3] /= 20
     tows = np.reshape(tows, num_tows * 3)
 
-    return np.concatenate((walk, wave, health, cash, exit_loc, spawns, orig_cash, tows), axis=0)
+    return np.concatenate((grid, wave, health, cash, exit_loc, spawns, orig_cash, tows), axis=0)
 
 
 class TdEnv(gym.Env):

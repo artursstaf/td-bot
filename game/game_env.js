@@ -140,30 +140,30 @@ function getScore() {
 }
 
 function getObservation() {
-    /*    let map = new Array(grid.length);
+    let map = new Array(grid.length);
 
-        for (let i = 0; i < grid.length; i++)
-            map[i] = grid[i].slice(0);
+    for (let i = 0; i < grid.length; i++)
+        map[i] = grid[i].slice(0);
 
-        for (let i = 0; i < spawnpoints.length; i++) {
-            let s = spawnpoints[i];
-            map[s.x][s.y] = 16;
-        }
+    for (let i = 0; i < spawnpoints.length; i++) {
+        let s = spawnpoints[i];
+        map[s.x][s.y] = 16;
+    }
 
-        for (let i = 0; i < tempSpawns.length; i++) {
-            let s = tempSpawns[i][0];
-            map[s.x][s.y] = 17;
-        }*/
+    for (let i = 0; i < tempSpawns.length; i++) {
+        let s = tempSpawns[i][0];
+        map[s.x][s.y] = 17;
+    }
 
-    /*    // Exit location
-        map[exit.x][exit.y] = 18;*/
+    // Exit location
+    map[exit.x][exit.y] = 18;
 
-    /*
-        for (let i = 0; i < towers.length; i++) {
-            let t = towers[i];
-            map[t.gridPos.x][t.gridPos.y] = t.id + 1;
-        }
-    */
+    for (let i = 0; i < towers.length; i++) {
+        let t = towers[i];
+        map[t.gridPos.x][t.gridPos.y] = t.id + 1;
+    }
+
+    // Towers in list
     let tows = buildArray(1, 20, [0, 0, 0])[0];
     for (let i = 0; i < 20 && i < towers.length; i++) {
         let t = towers[i];
@@ -171,15 +171,17 @@ function getObservation() {
         tows[i] = [t.id - 1, t.gridPos.x, t.gridPos.y]
     }
 
-    let walk_map = new Array(grid.length);
-    for (let i = 0; i < paths.length; i++)
-        walk_map[i] = paths[i].slice(0);
+    /*
+        let walk_map = new Array(grid.length);
+        for (let i = 0; i < paths.length; i++)
+            walk_map[i] = paths[i].slice(0);
+    */
 
     let exit_loc = [exit.x, exit.y];
     let s0 = spawnpoints[0];
     let s1 = spawnpoints[1];
 
     let spawns = [s0.x, s0.y, s1.x, s1.y];
-    return [walk_map, wave, health, cash, exit_loc, spawns, tows];
+    return [map, wave, health, cash, exit_loc, spawns, tows];
 }
 
