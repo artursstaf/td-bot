@@ -19,7 +19,7 @@ n_steps = 256
 def fresh_learn():
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(1)], start_method="spawn")
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
     model = PPO2(TdPolicy3, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
