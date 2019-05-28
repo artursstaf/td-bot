@@ -44,10 +44,12 @@ class TdPolicy3(ActorCriticPolicy):
             # Grid CNN
             grid = tf.reshape(grid, [tf.shape(grid)[0], cols, rows, 1])
             grid = nature_cnn(grid)
+            grid = act_fun(linear(grid, "grid_fc2", 512, init_scale=np.sqrt(2)))
 
             # Non spatial
             non_spatial = tf.concat((wave, health, cash, exit2, spawns), axis=-1)
             non_spatial = tf.nn.tanh(linear(non_spatial, "non_spatial_fc1", 256, init_scale=np.sqrt(2)))
+            non_spatial = tf.nn.tanh(linear(non_spatial, "non_spatial_fc2", 256, init_scale=np.sqrt(2)))
 
             # towers
             tows = tf.reshape(tows, [tf.shape(tows)[0], 20, 3])
@@ -60,14 +62,14 @@ class TdPolicy3(ActorCriticPolicy):
             tows = tf.layers.max_pooling1d(tows, 5, 2)
             tows = tf.layers.flatten(tows)
             tows = act_fun(linear(tows, "towers_fc2", 256, init_scale=np.sqrt(2)))
+            tows = act_fun(linear(tows, "towers_fc3", 256, init_scale=np.sqrt(2)))
 
             # combine
             latent = tf.concat((grid, non_spatial, tows), axis=-1)
-            latent = act_fun(linear(latent, "shared_fc1", 256, init_scale=np.sqrt(2)))
-            latent = act_fun(linear(latent, "shared_fc2", 256, init_scale=np.sqrt(2)))
+            latent = act_fun(linear(latent, "shared_fc1", 1024, init_scale=np.sqrt(2)))
 
             # Build the non-shared part of policy and value network
-            latent_policy = act_fun(linear(latent, "pi_fc1", 256, init_scale=np.sqrt(2)))
+            latent_policy = act_fun(linear(latent, "pi_fc1", 1024, init_scale=np.sqrt(2)))
             latent_value = act_fun(linear(latent, "vf_fc1", 256, init_scale=np.sqrt(2)))
 
             self.value_fn = linear(latent_value, 'vf', 1)

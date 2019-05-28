@@ -13,24 +13,27 @@ from training.td_policy_2 import TdPolicy2
 from training.td_policy_3 import TdPolicy3
 
 gamm = 0.979399
-n_steps = 256
+n_steps = 128
+learning_rate = 3e-4
+ent_coef = 0.0
 
 
 def fresh_learn():
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
-    model = PPO2(TdPolicy3, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm)
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
+    model = PPO2(TdPolicy3, env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps, gamma=gamm,
+                 learning_rate=learning_rate)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn)
 
 
 def load_from_and_train(filename):
     env = TdEnv()
     env.reset()
-    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="spawn")
+    env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
     model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
-                      gamma=gamm,
-                      num_timesteps=14063700)
+                      gamma=gamm, learning_rate=learning_rate, ent_coef=ent_coef,
+                      num_timesteps=79170001)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 
