@@ -102,7 +102,7 @@ function addWave(pattern) {
 
 // Buy and place a tower if player has enough moneyd
 function buy(t) {
-    if (godMode || cash >= t.cost) {
+    if ((godMode || cash >= t.cost) && towers.length < 20) {
         if (!godMode) {
             cash -= t.cost;
             toPlace = false;

@@ -8,8 +8,8 @@ import numpy as np
 from training.env_wrapper import JsTdWrap
 from training.td_callback import log_dir
 
-cols = 60
-rows = 40
+cols = 20
+rows = 20
 num_tows = 20
 obs_shape = cols * rows + 1 + 1 + 1 + 1 + 2 + 4 + num_tows * 3
 

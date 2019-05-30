@@ -1,7 +1,7 @@
 // Provides interface for agent to interact with environment
 let actionsPerWave = 5;
-width = 1440;
-height = 960;
+width = 480;
+height = 480;
 
 function envReset() {
     return env.reset();

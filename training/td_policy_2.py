@@ -2,8 +2,6 @@ import numpy as np
 import tensorflow as tf
 from stable_baselines.a2c.utils import batch_to_seq, linear, seq_to_batch, lstm
 from stable_baselines.common.policies import ActorCriticPolicy
-from tensorflow.python.layers.core import dense
-from tensorflow.python.layers.pooling import max_pooling1d
 
 from training.td_env import obs_shape, cols, rows, num_tows
 
