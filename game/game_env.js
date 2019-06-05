@@ -1,7 +1,7 @@
 // Provides interface for agent to interact with environment
-let actionsPerWave = 5;
-width = 480;
-height = 480;
+let actionsPerWave = 3;
+width = 960;
+height = 720;
 
 function envReset() {
     return env.reset();
@@ -32,7 +32,7 @@ env = {
         return getObservation();
     },
     step: function (actions) {
-        applyActions(actions);
+        let penalty_failed_action = applyActions(actions);
 
         env.steps++;
 
@@ -42,13 +42,21 @@ env = {
         const prev_wave = wave;
         const prev_health = health;
         let died = false;
+        let max_creeps = newEnemies.length * 3;
         while (prev_wave === wave && !action_phase) {
             if (render) {
                 died = draw();
             } else {
                 died = tickWithoutRender();
             }
+            if (newEnemies.length !== 0) {
+                last_enemies_count = newEnemies.length;
+            }
+
             if (died) break;
+        }
+        if (died){
+            penalty_failed_action  = (Math.min(wave_killed_count, max_creeps) / max_creeps) * 0.5
         }
 
         // Ignore cash loss from buying towers
@@ -56,6 +64,7 @@ env = {
         env.total_cash_acquired += cashGained;
         env.health_lost = prev_health - health;
         let state = getState(died);
+        state[1] += penalty_failed_action;
 
         if (died) {
             env.reset();
@@ -77,7 +86,7 @@ function randomAction() {
     // [[buy, upgrade, sell, nothing],[tower type],
     // [ one hot X coordinate], [one hot Y coordinate]]
     return [randomInt(4), randomInt(7),
-        randomInt(cols), randomInt(rows), randomInt(20)]
+        randomInt(cols), randomInt(rows), randomInt(15)]
 }
 
 function applyActions(actions) {
@@ -88,33 +97,51 @@ function applyActions(actions) {
     let whicTower = actions[4];
     let t = towers[whicTower];
 
+    let failed_action = false;
     switch (action) {
         case 0:
             break;
         case 1: // Buy
             toPlace = true;
             if (canPlace(x, y)) {
-                buy(createTower(x, y, tower[tower.idToName[towerType]]));
+                let bought = buy(createTower(x, y, tower[tower.idToName[towerType]]));
+                if (!bought) {
+                    failed_action = true;
+                }
+            } else {
+                failed_action = true;
             }
             break;
         case 2: // Upgrade
             if (t && t.upgrades.length > 0) {
                 selected = t;
-                upgrade(t.upgrades[0]);
+                let upgraded = upgrade(t.upgrades[0]);
+                if (!upgraded) {
+                    failed_action = true;
+                }
+            } else {
+                failed_action = true;
             }
             break;
         case 3: // Sell
             if (t) {
                 sell(t);
+            } else {
+                failed_action = true;
             }
         default:
             break;
+    }
+    if (failed_action) {
+        return 0;
+    } else {
+        return 0;
     }
 }
 
 function getReward(isDone) {
     if (wave === 40) {
-        return 40;
+        return 10;
     }
     if (isDone) {
         return 0;
@@ -125,18 +152,13 @@ function getReward(isDone) {
     let reward = new_score - env.score;
     env.score = new_score;
 
-    // Penalty for losing health after wave passed;
-    if (env.health_lost !== 0) {
-        reward = reward * (env.health_lost / 40.0);
-    }
-
     // Time scale earlier rewards are more valuable
-    reward = reward * (Math.pow(0.6, wave / 10.0));
+    //reward = reward * (Math.pow(0.6, wave / 10.0));
     return reward;
 }
 
 function getScore() {
-    return 2 * wave;
+    return wave;
 }
 
 function getObservation() {
@@ -147,25 +169,20 @@ function getObservation() {
 
     for (let i = 0; i < spawnpoints.length; i++) {
         let s = spawnpoints[i];
-        map[s.x][s.y] = 16;
-    }
-
-    for (let i = 0; i < tempSpawns.length; i++) {
-        let s = tempSpawns[i][0];
-        map[s.x][s.y] = 17;
+        map[s.x][s.y] = 3;
     }
 
     // Exit location
-    map[exit.x][exit.y] = 18;
+    map[exit.x][exit.y] = 4;
 
     for (let i = 0; i < towers.length; i++) {
         let t = towers[i];
-        map[t.gridPos.x][t.gridPos.y] = t.id + 1;
+        map[t.gridPos.x][t.gridPos.y] = 2;
     }
 
     // Towers in list
-    let tows = buildArray(1, 20, [0, 0, 0])[0];
-    for (let i = 0; i < 20 && i < towers.length; i++) {
+    let tows = buildArray(1, 15, [0, 0, 0])[0];
+    for (let i = 0; i < 15 && i < towers.length; i++) {
         let t = towers[i];
         // 13
         tows[i] = [t.id - 1, t.gridPos.x, t.gridPos.y]

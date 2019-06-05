@@ -28,7 +28,8 @@ let metadata;           // tile metadata
 let paths;              // direction to reach exit
 let visitMap;           // whether exit can be reached
 let walkMap;            // walkability map
-
+let setMaps = true;
+let setMapsCount = 0;
 let exit;
 let spawnpoints = [];
 let tempSpawns = [];
@@ -67,6 +68,8 @@ let toPathfind;         // flag to update enemy path-finding
 let toPlace;            // flag to place a tower
 let toWait;             // flag to wait before next wave
 let wcd;                // number of ticks until next wave
+let wave_killed_count = 0;
+
 
 let avgFPS = 0;         // current average of all FPS values
 let numFPS = 0;         // number of FPS values calculated so far
@@ -94,6 +97,7 @@ function addGroup(group) {
 
 // Prepare a wave
 function addWave(pattern) {
+    wave_killed_count = 0;
     spawnCool = pattern.shift();
     for (let i = 0; i < pattern.length; i++) {
         addGroup(pattern[i]);
@@ -102,7 +106,7 @@ function addWave(pattern) {
 
 // Buy and place a tower if player has enough moneyd
 function buy(t) {
-    if ((godMode || cash >= t.cost) && towers.length < 20) {
+    if ((godMode || cash >= t.cost) && towers.length < 15) {
         if (!godMode) {
             cash -= t.cost;
             toPlace = false;
@@ -299,7 +303,12 @@ function loadMap() {
     if (name === 'solid2' || name === 'solid3') {
         wallCover = 0.3;
     }
-    randomMap(numSpawns);
+    if(!setMaps){
+        randomMap(numSpawns);
+    }else{
+        loadFromSet();
+    }
+
     display = replaceArray(
         grid, [0, 1, 2, 3, 4], ['empty', 'wall', 'empty', 'tower', 'empty']
     );
@@ -312,6 +321,14 @@ function loadMap() {
     metadata = buildArray(cols, rows, null);
     tempSpawns = [];
     recalculate();
+    setMapsCount = (setMapsCount + 1) % 100;
+}
+
+function loadFromSet(){
+    let map = maps.set[setMapsCount];
+    grid = map[0];
+    spawnpoints = [stv(map[1]), stv(map[2])];
+    exit = stv(map[3]);
 }
 
 // Load all sounds
@@ -434,6 +451,17 @@ function randomMap(numSpawns) {
         spawnpoints.push(s);
     }
 }
+function generateRandomMaps(){
+    let list = [];
+    for(let i =0; i < 100; i++){
+        randomMap(2);
+        let x =  [copyArray(grid), vts(spawnpoints[0]), vts(spawnpoints[1]), vts(exit)];
+        list.push(x);
+    }
+    return window.LZString.compressToBase64(JSON.stringify(list));
+}
+
+
 
 // Random grid coordinate
 function randomTile() {
@@ -445,10 +473,10 @@ function randomWave() {
     const waves = [];
 
     if (isWave(0, 1)) {
-        waves.push([70, ['weak', 50]]);
+        waves.push([55, ['weak', 50]]);
     }
     if (isWave(1, 3)) {
-        waves.push([60, ['weak', 50]]);
+        waves.push([40, ['weak', 50]]);
     }
     if (isWave(2, 4)) {
         waves.push([20, ['weak', 25]]);
@@ -641,8 +669,8 @@ function resetGame(pause_game = true) {
 
 // Resizes cols, rows, and canvas based on tile size
 function resizeMax() {
-    cols = 20;
-    rows = 20;
+    cols = 40;
+    rows = 30;
     if (render) {
         resizeCanvas(cols * ts, rows * ts, true);
     }
@@ -718,7 +746,9 @@ function upgrade(t) {
         if (render) {
             updateInfo(selected);
         }
+        return true;
     }
+    return false;
 }
 
 // Return whether tile is walkable
@@ -754,6 +784,7 @@ let verboseActions = {
 };
 
 let steps_glob = 0;
+
 function draw() {
     // Apply actions after first frame
     let action_phase = steps_glob % actionsPerWave !== 0 || steps_glob === 0;
@@ -772,12 +803,12 @@ function draw() {
         done = health <= 0 || wave >= 40;
 
         let actions = remoteGetActions(obs, done)["action"];
-        console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}]`);
+        console.log(`[${verboseActions[actions[0]]}, ${tower.idToName[actions[1] + 1]}, ${actions[2]}, ${actions[3]}, ${actions[4]}]`);
         applyActions(actions);
         tickWithoutRender();
         return;
     }
-    if(prev_wave_glob !== wave){
+    if (prev_wave_glob !== wave) {
         steps_glob = 0;
     }
     prev_wave_glob = wave;
@@ -987,6 +1018,9 @@ function draw() {
 
     // If player is dead, reset samples
     if (health <= 0) {
+        if (!bot_play) {
+            resetGame();
+        }
         return true;
     }
 

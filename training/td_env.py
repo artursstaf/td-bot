@@ -8,9 +8,9 @@ import numpy as np
 from training.env_wrapper import JsTdWrap
 from training.td_callback import log_dir
 
-cols = 20
-rows = 20
-num_tows = 20
+cols = 40
+rows = 30
+num_tows = 15
 obs_shape = cols * rows + 1 + 1 + 1 + 1 + 2 + 4 + num_tows * 3
 
 
@@ -18,7 +18,7 @@ def _preprocess_observation(obs):
     grid, wave, health, cash, exit_loc, spawns, tows = obs
 
     grid = np.reshape(np.array(grid, dtype='float32'), cols * rows)
-    grid /= 18
+    grid /= 4
     wave = (np.array([wave], dtype='float32') - 20) / 40.0
     health = (np.array([health], dtype='float32') - 20) / 40.0
     orig_cash = np.array([cash], dtype='float32')
@@ -34,7 +34,7 @@ def _preprocess_observation(obs):
     spawns[2] /= cols
     spawns[3] /= rows
     tows = np.array(tows, dtype='float32')
-    tows[:, 1:3] /= 20
+    tows[:, 1:3] /= cols
     tows = np.reshape(tows, num_tows * 3)
 
     return np.concatenate((grid, wave, health, cash, exit_loc, spawns, orig_cash, tows), axis=0)

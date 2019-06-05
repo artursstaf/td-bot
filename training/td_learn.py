@@ -12,8 +12,9 @@ from training.td_policy_2 import TdPolicy2
 # around 33 steps before half-life
 from training.td_policy_3 import TdPolicy3
 
-gamm = 0.979399
-n_steps = 512
+# half-life of 3 waves
+gamm = 0.925875
+n_steps = 128
 
 
 def fresh_learn():
@@ -30,7 +31,7 @@ def load_from_and_train(filename):
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
     model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
                       gamma=gamm,
-                      num_timesteps=21518000)
+                      num_timesteps=4538800)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 

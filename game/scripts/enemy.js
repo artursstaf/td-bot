@@ -103,6 +103,7 @@ class Enemy {
 
     onKilled() {
         if (this.alive) {
+            wave_killed_count++;
             cash += this.cash;
             this.kill();
             if (!muteSounds && sounds.hasOwnProperty(this.sound)) {
