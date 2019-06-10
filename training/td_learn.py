@@ -1,7 +1,7 @@
 import glob
 import os
 
-from stable_baselines import PPO2, A2C
+from stable_baselines import PPO2, A2C, ACER
 from stable_baselines.common import set_global_seeds
 from stable_baselines.common.vec_env import DummyVecEnv, SubprocVecEnv
 
@@ -14,7 +14,8 @@ from training.td_policy_3 import TdPolicy3
 
 # half-life of 3 waves
 gamm = 0.925875
-n_steps = 128
+n_steps = 32
+ent_coef = 0.005
 
 
 def fresh_learn():
@@ -30,8 +31,8 @@ def load_from_and_train(filename):
     env.reset()
     env = SubprocVecEnv([make_env() for _ in range(12)], start_method="forkserver")
     model = PPO2.load(filename, env=env, verbose=1, nminibatches=1, tensorboard_log=log_dir, n_steps=n_steps,
-                      gamma=gamm,
-                      num_timesteps=4538800)
+                      gamma=gamm, ent_coef=ent_coef,
+                      num_timesteps=2842100)
     model.learn(total_timesteps=1000000000000, callback=td_callback_fn, reset_num_timesteps=False)
 
 

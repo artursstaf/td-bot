@@ -39,19 +39,15 @@ class TdPolicy3(ActorCriticPolicy):
             cash = latent[:, fl_gr_c + 2:fl_gr_c + 3]
             exit2 = latent[:, fl_gr_c + 3:fl_gr_c + 5]
             spawns = latent[:, fl_gr_c + 5:fl_gr_c + 9]
-            orig_cash = latent[:, fl_gr_c + 9:fl_gr_c + 10]
             tows = latent[:, fl_gr_c + 10:]
 
             # Grid CNN
             grid = tf.reshape(grid, [tf.shape(grid)[0], cols, rows, 1])
             grid = nature_cnn(grid, pad="SAME")
-            grid = act_fun(linear(grid, "grid_fc_2", 512, init_scale=np.sqrt(2)))
-            grid = act_fun(linear(grid, "grid_fc_3", 512, init_scale=np.sqrt(2)))
 
             # Non spatial
             non_spatial = tf.concat((wave, health, cash, exit2, spawns), axis=-1)
-            non_spatial = act_fun(linear(non_spatial, "non_spatial_fc1", 256, init_scale=np.sqrt(2)))
-            non_spatial = act_fun(linear(non_spatial, "non_spatial_fc2", 256, init_scale=np.sqrt(2)))
+
 
             # towers
             tows = tf.reshape(tows, [tf.shape(tows)[0], num_tows, 3])
@@ -62,13 +58,10 @@ class TdPolicy3(ActorCriticPolicy):
             tows = tf.concat((tower_embeddings, rest), axis=-1)
             tows = tf.layers.dense(tows, 16, activation=tf.nn.relu, name="towers_fc1")
             tows = tf.layers.flatten(tows)
-            tows = act_fun(linear(tows, "towers_fc2", 256, init_scale=np.sqrt(2)))
-            tows = act_fun(linear(tows, "towers_fc3", 256, init_scale=np.sqrt(2)))
 
             # combine
             latent = tf.concat((grid, non_spatial, tows), axis=-1)
             latent = act_fun(linear(latent, "shared_fc1", 512, init_scale=np.sqrt(2)))
-            latent = act_fun(linear(latent, "shared_fc2", 512, init_scale=np.sqrt(2)))
 
             # Build the non-shared part of policy and value network
             latent_policy = act_fun(linear(latent, "pi_fc1", 512, init_scale=np.sqrt(2)))
