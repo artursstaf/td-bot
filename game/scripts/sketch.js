@@ -55,7 +55,7 @@ let boomSound;          // explosion sound effect
 // TODO add more functionality to god mode
 let godMode = false;    // make player immortal for test purposes
 let healthBar = true;   // display enemy health bar
-let muteSounds = false; // whether to mute sounds
+let muteSounds = true; // whether to mute sounds
 let paused;             // whether to update or not
 const randomWaves = true; // whether to do random or custom waves
 let scd;                // number of ticks until next spawn cycle
@@ -453,7 +453,7 @@ function randomMap(numSpawns) {
 }
 function generateRandomMaps(){
     let list = [];
-    for(let i =0; i < 100; i++){
+    for(let i =0; i < 5; i++){
         randomMap(2);
         let x =  [copyArray(grid), vts(spawnpoints[0]), vts(spawnpoints[1]), vts(exit)];
         list.push(x);
@@ -786,6 +786,7 @@ let verboseActions = {
 let steps_glob = 0;
 
 function draw() {
+    ticks++;
     // Apply actions after first frame
     let action_phase = steps_glob % actionsPerWave !== 0 || steps_glob === 0;
     if (bot_play && wave > 0 && action_phase && prev_wave_glob !== wave) {
@@ -1053,6 +1054,7 @@ function draw() {
 }
 
 function tickWithoutRender() {
+    ticks++;
     let oldMute = muteSounds;
     let oldRender = render;
     let oldParticles = showEffects;

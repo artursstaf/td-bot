@@ -34,13 +34,23 @@ function GetPost(yourUrl, payload) {
 }
 
 function countSteps() {
+    ticks = 0;
     let i = 0;
     render = false;
     env.reset();
     while (wave < 50) {
         [obs, reward, done] = env.step(randomAction());
-        console.log(`Step: ${i} wave: ${wave}, enemies: ${enemies.length} reward: ${reward}, done: ${done}`);
+        console.log(`Step: ${i} wave: ${wave}, enemies: ${enemies.length} reward: ${reward}, done: ${done}, ticks: ${ticks}`);
         if(done) env.reset();
         i++;
     }
+}
+
+function skipToNextWave(){
+    noLoop();
+    let prev_wave = wave;
+    while(wave == prev_wave){
+        draw();
+    }
+    loop();
 }
